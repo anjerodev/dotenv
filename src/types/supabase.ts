@@ -138,7 +138,7 @@ export interface Database {
           created_at?: string | null
           id?: string
           name: string
-          owner: string
+          owner?: string
           updated_at?: string | null
         }
         Update: {

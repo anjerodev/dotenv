@@ -10,8 +10,6 @@ export const routes = {
 
   // API
   // ** Queries
-  API_COUNT_PROJECTS: '/api/projects/count',
-  API_LIST_PROJECTS: '/api/projects',
   API_PROJECT: (id: string) => `/api/projects/${id}`,
   API_LIST_DOCUMENTS: (id: string) => `/api/projects/${id}/documents`,
   API_COUNT_DOCUMENTS: (id: string) => `/api/projects/${id}/documents/count`,

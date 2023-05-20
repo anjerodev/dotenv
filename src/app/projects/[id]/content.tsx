@@ -15,9 +15,7 @@ import {
   X,
 } from 'lucide-react'
 
-import { Document } from '@/types/collections'
-import useDocuments from '@/hooks/useDocuments'
-import useProject from '@/hooks/useProject'
+import { Document, ProjectType } from '@/types/collections'
 import { ActionIcon } from '@/components/ui/action-icon'
 import { Button } from '@/components/ui/button'
 import { Card, CardsContainer } from '@/components/ui/card'
@@ -29,7 +27,6 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
 import { Input } from '@/components/ui/input'
-import { Skeleton } from '@/components/ui/skeleton'
 import {
   Tooltip,
   TooltipContent,
@@ -47,7 +44,15 @@ type State = {
   removeProjectDialogIsOpen: boolean
 }
 
-export default function PageContent({ id }: { id: string }) {
+interface DocumentInfo extends Omit<Document, 'content' | 'updated_by'> {}
+
+export default function PageContent({
+  documents,
+  project,
+}: {
+  documents: DocumentInfo[]
+  project: ProjectType
+}) {
   const [state, setState] = useReducer(
     (prevState: State, newState: Partial<State>): State => ({
       ...prevState,
@@ -59,26 +64,9 @@ export default function PageContent({ id }: { id: string }) {
       removeProjectDialogIsOpen: false,
     }
   )
-  const {
-    data: project,
-    error,
-    isLoading,
-    removeProject,
-    updateProject,
-  } = useProject({
-    projectId: id,
-  })
-  const {
-    count,
-    data: documents,
-    isLoading: documentsAreLoading,
-  } = useDocuments({ projectId: id })
+
   const router = useRouter()
   const pathname = usePathname()
-
-  const handleClick = (url: string) => {
-    router.push(url)
-  }
 
   useEffect(() => {
     if (project && project.name) {
@@ -86,13 +74,17 @@ export default function PageContent({ id }: { id: string }) {
     }
   }, [project])
 
+  const handleClick = (url: string) => {
+    router.push(url)
+  }
+
   const handleEditing = () => {
     setState({ editing: !state.editing })
   }
 
   const handleSaveChanges = async () => {
     try {
-      await updateProject(state.updates)
+      // await updateProject(state.updates)
     } catch (error) {
       console.log({ error })
     }
@@ -137,20 +129,16 @@ export default function PageContent({ id }: { id: string }) {
           All projects
         </Button>
         <ChevronRight size={16} />
-        {(() => {
-          if (isLoading || !project) return <Skeleton className="h-4 w-36" />
-          else if (state.editing)
-            return (
-              <Input
-                placeholder="Please, fill it up"
-                value={state.updates.name}
-                onChange={handleNameChange}
-              />
-            )
-          return (
-            <div className="font-mono text-2xl font-bold">{project.name}</div>
-          )
-        })()}
+        {state.editing ? (
+          <Input
+            placeholder="Please, fill it up"
+            value={state.updates.name}
+            onChange={handleNameChange}
+          />
+        ) : (
+          <div className="font-mono text-2xl font-bold">{project.name}</div>
+        )}
+
         <div className="flex grow items-center justify-end">
           {state.editing ? (
             <EditingActions
@@ -166,63 +154,44 @@ export default function PageContent({ id }: { id: string }) {
           )}
         </div>
       </div>
-      <CardsContainer>
-        <Card
-          onClick={() => handleClick(`${pathname}?new=true`)}
-          disabled={!project || state.editing}
-          className="h-full"
-        >
-          <div className="flex grow flex-col items-center justify-center gap-2 font-semibold text-card-foreground">
-            <Plus size={32} />
-            Add document
-          </div>
-        </Card>
-        {/* Loading cards */}
-        {count && documentsAreLoading ? (
-          new Array(count)
-            .fill('')
-            .map((_, index) => (
-              <Skeleton key={index} className="h-[130px] rounded-xl" />
-            ))
-        ) : (
-          <>
-            {/* Documents */}
-            {filteredDocuments?.map((document: Document) => (
-              <div key={document.id} className="group/card relative">
-                <Card
-                  onClick={() => handleClick(`${pathname}?doc=${document.id}`)}
-                  disabled={!project || state.editing}
-                  className="relative z-0 h-fit w-full text-start"
-                >
-                  <div className="truncate text-lg font-medium">
-                    {document.name}
-                  </div>
-                  <span className="mt-1 text-sm text-card-foreground/50">
-                    {dayjs(document.updated_at).format('MMM DD, YYYY')}
-                  </span>
-                  <div className="mt-2 flex justify-end">
-                    <TeamAvatars
-                      team={document.team.members}
-                      count={document.team.count}
-                    />
-                  </div>
-                </Card>
-                {state.editing && (
-                  <ActionIcon
-                    onClick={() => handleAddRemovedDoc(document.id)}
-                    className="group/button absolute -right-2 -top-2 z-10 rounded-full border border-foreground/10 bg-background text-destructive shadow-lg hover:bg-[#fdecec] dark:border-zinc-800 dark:text-destructive dark:hover:bg-[#2a191b]"
-                  >
-                    <Trash2
-                      size={20}
-                      className="group-hover/button:!animate-none group-hover/card:animate-shaking"
-                    />
-                  </ActionIcon>
-                )}
+      <DocumentsContainer disabled={state.editing}>
+        {filteredDocuments?.map((document: DocumentInfo) => (
+          <div
+            key={document.id}
+            className="group/card relative animate-in fade-in zoom-in-50"
+          >
+            <Card
+              onClick={() => handleClick(`${pathname}?doc=${document.id}`)}
+              disabled={state.editing}
+              className="relative z-0 h-fit w-full text-start"
+            >
+              <div className="truncate text-lg font-medium">
+                {document.name}
               </div>
-            ))}
-          </>
-        )}
-      </CardsContainer>
+              <span className="mt-1 text-sm text-card-foreground/50">
+                {dayjs(document.updated_at).format('MMM DD, YYYY')}
+              </span>
+              <div className="mt-2 flex justify-end">
+                <TeamAvatars
+                  team={document.team.members}
+                  count={document.team.count}
+                />
+              </div>
+            </Card>
+            {state.editing && (
+              <ActionIcon
+                onClick={() => handleAddRemovedDoc(document.id)}
+                className="group/button absolute -right-2 -top-2 z-10 rounded-full border border-foreground/10 bg-background text-destructive shadow-lg hover:bg-[#fdecec] dark:border-zinc-800 dark:text-destructive dark:hover:bg-[#2a191b]"
+              >
+                <Trash2
+                  size={20}
+                  className="group-hover/button:!animate-none group-hover/card:animate-shaking"
+                />
+              </ActionIcon>
+            )}
+          </div>
+        ))}
+      </DocumentsContainer>
       {project && (
         <>
           <DocumentDialog projectId={project.id} projectName={project.name} />
@@ -230,7 +199,6 @@ export default function PageContent({ id }: { id: string }) {
             open={state.removeProjectDialogIsOpen}
             onOpenChange={handleRemoveProjectDialog}
             project={project}
-            onSucced={removeProject}
           />
         </>
       )}
@@ -298,5 +266,36 @@ const EditingActions = ({ onSave, onDiscard }: EditingActionsProps) => {
         </Tooltip>
       </div>
     </TooltipProvider>
+  )
+}
+
+export const DocumentsContainer = ({
+  disabled,
+  children,
+}: {
+  disabled: boolean
+  children: React.ReactNode
+}) => {
+  const router = useRouter()
+  const pathname = usePathname()
+
+  const handleClick = (url: string) => {
+    router.push(url)
+  }
+
+  return (
+    <CardsContainer>
+      <Card
+        onClick={() => handleClick(`${pathname}?new=true`)}
+        disabled={disabled}
+        className="h-full"
+      >
+        <div className="flex grow flex-col items-center justify-center gap-2 py-4 font-semibold text-card-foreground">
+          <Plus size={32} />
+          Add document
+        </div>
+      </Card>
+      {children}
+    </CardsContainer>
   )
 }

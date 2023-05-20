@@ -26,6 +26,7 @@ import {
 } from '@/components/ui/tooltip'
 import { useAuth } from '@/components/providers/supabase-auth-provider'
 import { toast } from '@/components/providers/toast-provider'
+import TeamAvatars from '@/components/team-avatars'
 
 import TeamDialog from './team-dialog'
 
@@ -187,13 +188,7 @@ export default function DialogForm({
         {documentId && (
           <>
             {isLoading || !data?.team ? (
-              <div className="flex items-center justify-end">
-                {new Array(3).fill('').map((_, index) => (
-                  <div key={index} className="-ml-2 rounded-full bg-background">
-                    <Skeleton className="m-[3px] h-[34px] w-[34px] animate-skeleton-pulse rounded-full" />
-                  </div>
-                ))}
-              </div>
+              <TeamAvatars loading />
             ) : (
               <TeamDialog
                 title={form.values.name}

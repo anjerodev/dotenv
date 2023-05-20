@@ -12,7 +12,7 @@ import HomeSecrets from '@/components/home-secrets'
 
 export default async function Home() {
   return (
-    <div className="px-8 xl:px-0">
+    <div className="w-full px-8 xl:px-0">
       <section className="min-h-screen w-full py-24">
         <div className="mx-auto w-full max-w-5xl">
           <div className="mb-7 select-none px-4 text-center font-mono text-3xl font-bold leading-relaxed sm:text-6xl sm:leading-[1.5]">
@@ -141,8 +141,8 @@ export default async function Home() {
                 </div>
               </div>
               <h1 className="mb-4 font-mono">
-                Community driven. Code, contribute, improve. Let’s make a better
-                web together.
+                Community driven. Learn, contribute, improve. Let’s make a
+                better web together.
               </h1>
               <p className="text-lg text-foreground/50">
                 Self host your own copy if you want.

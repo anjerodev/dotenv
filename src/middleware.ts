@@ -7,13 +7,10 @@ import type { Database } from '@/types/supabase'
 export async function middleware(req: NextRequest) {
   const res = NextResponse.next()
 
-  const supabase = createMiddlewareSupabaseClient<Database>(
-    {
-      req,
-      res,
-    },
-    { supabaseKey: process.env.SUPABASE_SERVICE_ROLE_KEY }
-  )
+  const supabase = createMiddlewareSupabaseClient<Database>({
+    req,
+    res,
+  })
 
   const {
     data: { session },

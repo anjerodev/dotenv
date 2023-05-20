@@ -26,7 +26,7 @@ export default function MainContainer({
         </div>
       )}
       <main
-        className={`relative z-10 min-h-screen w-full ${
+        className={`relative z-10 flex min-h-[100dvh] w-full ${
           hasNavbar ? 'pt-16' : 'pt-0'
         }`}
       >

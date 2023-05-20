@@ -1,20 +1,13 @@
-import { NextResponse } from 'next/server'
-
 import { Member, MemberRole } from '@/types/collections'
-import { RequestError } from '@/lib/request-error-handler'
-import { getSession, supabase } from '@/lib/supabase-server'
 
-type ParamsType = {
-  params: { id: string }
-}
+import { RequestError } from '../request-error-handler'
+import { getSession } from '../supabase-server'
 
-export async function GET(req: Request, { params }: ParamsType) {
-  const project_id = params.id
-
+export const getProjectDocuments = async (id: string) => {
   try {
-    const { error: sessionError } = await getSession()
+    const { supabase, error: sessionError } = await getSession()
 
-    if (sessionError) {
+    if (sessionError || !supabase) {
       throw new RequestError({
         message:
           sessionError?.message ?? 'There is no connection with the database.',
@@ -22,11 +15,10 @@ export async function GET(req: Request, { params }: ParamsType) {
       })
     }
 
-    // Fetch the project
-    const { data: documentsData, error } = await supabase
+    const { data: documents, error } = await supabase
       .from('documents')
-      .select('*')
-      .eq('project_id', project_id)
+      .select()
+      .eq('project_id', id)
       .order('created_at', { ascending: true })
 
     if (error) {
@@ -34,10 +26,10 @@ export async function GET(req: Request, { params }: ParamsType) {
       throw new RequestError({ message: error.message })
     }
 
-    const documents = []
+    const data = []
 
     // Fetch the document data
-    for (const document of documentsData) {
+    for (const document of documents) {
       // Get the last document history
       const lastUpdate = supabase
         .from('documents_history')
@@ -50,7 +42,7 @@ export async function GET(req: Request, { params }: ParamsType) {
       // Get the document members
       const documentTeam = supabase
         .from('documents_members')
-        .select('role, member:profiles(id, username, avatar_url)', {
+        .select('role, profile:profiles(id, username, avatar_url)', {
           count: 'exact',
         })
         .eq('document_id', document.id)
@@ -66,7 +58,6 @@ export async function GET(req: Request, { params }: ParamsType) {
 
       if (documentError) {
         console.log({ documentError })
-        // throw new RequestError({ message: documentError.message })
         continue
       }
 
@@ -74,7 +65,7 @@ export async function GET(req: Request, { params }: ParamsType) {
 
       if (teamData) {
         for (const member of teamData.data) {
-          const { role, member: profile } = member
+          const { role, profile } = member
           if (profile && !Array.isArray(profile)) {
             const avatarUrl = profile.avatar_url
             const avatar = avatarUrl
@@ -88,20 +79,18 @@ export async function GET(req: Request, { params }: ParamsType) {
         }
       }
 
-      documents.push({
+      data.push({
         ...document,
         ...lastUpdateData.data,
         team: {
           members: team,
-          count: teamData.count,
+          count: teamData.count ?? 0,
         },
       })
     }
 
-    return NextResponse.json(documents)
+    return data
   } catch (error: any) {
-    return new Response(JSON.stringify({ message: error.message }), {
-      status: error.status,
-    })
+    throw error
   }
 }

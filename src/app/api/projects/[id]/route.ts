@@ -1,20 +1,19 @@
 import { NextResponse } from 'next/server'
 
 import { RequestError } from '@/lib/request-error-handler'
-import { getSupabaseServerClientInfo } from '@/lib/supabase-server'
+import { getSession, supabase } from '@/lib/supabase-server'
 
 type ParamsType = {
   params: { id: string }
 }
 
-export async function GET(request: Request, { params }: ParamsType) {
+export async function GET(req: Request, { params }: ParamsType) {
   const project_id = params.id
 
   try {
-    const { supabase, error: sessionError } =
-      await getSupabaseServerClientInfo()
+    const { error: sessionError } = await getSession()
 
-    if (sessionError || !supabase) {
+    if (sessionError) {
       throw new RequestError({
         message:
           sessionError?.message ?? 'There is no connection with the database.',

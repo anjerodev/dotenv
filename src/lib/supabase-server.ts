@@ -1,12 +1,12 @@
 import { cookies, headers } from 'next/headers'
+// import 'server-only'
+import { redirect } from 'next/navigation'
+import { routes } from '@/constants/routes'
 import {
   Session,
   createServerComponentSupabaseClient,
 } from '@supabase/auth-helpers-nextjs'
-
-import 'server-only'
-import { redirect } from 'next/navigation'
-import { routes } from '@/constants/routes'
+import { createClient } from '@supabase/supabase-js'
 
 import type { Database } from '@/types/supabase'
 
@@ -17,26 +17,30 @@ type SupabaseError = {
   status: number
 }
 
-type SupabaseClientInfo = {
-  supabase: ReturnType<
-    typeof createServerComponentSupabaseClient<Database>
-  > | null
-  session: Session | null
-  error: SupabaseError | null
-}
+export const supabase = createClient<Database>(
+  process.env.NEXT_PUBLIC_SUPABASE_URL!,
+  process.env.SUPABASE_SERVICE_ROLE_KEY!
+)
 
 export const createServerClient = () => {
   return createServerComponentSupabaseClient<Database>({
     headers,
     cookies,
-    supabaseKey: process.env.SUPABASE_SERVICE_ROLE_KEY,
   })
 }
 
-export async function getSupabaseServerClientInfo(): Promise<SupabaseClientInfo> {
-  try {
-    const supabase = createServerClient()
+type SupabaseClientInfo = {
+  supabase: ReturnType<
+    typeof createServerComponentSupabaseClient<Database>
+  > | null
+  session: Session
+  error: SupabaseError | null
+}
 
+export async function getSession(): Promise<SupabaseClientInfo> {
+  const supabase = createServerClient()
+
+  try {
     const {
       data: { session },
     } = await supabase.auth.getSession()
@@ -47,18 +51,19 @@ export async function getSupabaseServerClientInfo(): Promise<SupabaseClientInfo>
 
     return { supabase, session, error: null }
   } catch (error: any) {
-    return {
-      supabase: null,
-      session: null,
-      error: { message: error.message, status: error.status },
+    const errorResponse = {
+      message: error.message,
+      status: error.status,
     }
+
+    return { supabase, session: undefined as any, error: errorResponse }
   }
 }
 
 export async function checkUsername() {
-  const { supabase, session } = await getSupabaseServerClientInfo()
+  const { session } = await getSession()
 
-  if (session && supabase) {
+  if (session) {
     const userId = session.user.id
     const { data: user, error } = await supabase
       .from('profiles')

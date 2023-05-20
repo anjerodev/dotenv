@@ -1,11 +1,8 @@
-import { cookies, headers } from 'next/headers'
 import { NextRequest, NextResponse } from 'next/server'
-import { createRouteHandlerSupabaseClient } from '@supabase/auth-helpers-nextjs'
 
 import { Member, MemberRole } from '@/types/collections'
-import { Database } from '@/types/supabase'
 import { RequestError } from '@/lib/request-error-handler'
-import { getSupabaseServerClientInfo } from '@/lib/supabase-server'
+import { getSession, supabase } from '@/lib/supabase-server'
 
 type ParamsType = {
   params: { doc: string; id: string }
@@ -18,20 +15,9 @@ export async function GET(req: NextRequest, { params }: ParamsType) {
   const documentId = params.doc
 
   try {
-    const supabase = createRouteHandlerSupabaseClient<Database>({
-      headers,
-      cookies,
-      supabaseKey: process.env.SUPABASE_SERVICE_ROLE_KEY,
-    })
+    const { error: sessionError } = await getSession()
 
-    const {
-      data: { session },
-      error: sessionError,
-    } = await supabase.auth.getSession()
-
-    console.log({ session })
-
-    if (sessionError || !supabase) {
+    if (sessionError) {
       throw new RequestError({
         message:
           sessionError?.message ?? 'There is no connection with the database.',
@@ -66,14 +52,12 @@ export async function GET(req: NextRequest, { params }: ParamsType) {
       throw new RequestError({ message: error.message })
     }
 
-    const { data: decrypted, error: decryptedError } = await supabase
+    const { data: decrypted } = await supabase
       .from('decrypted_documents_history')
-      .select('content, decrypted_content')
+      .select('decrypted_content')
+      .eq('id', document.data.id)
       .limit(1)
-
-    // .eq('id', document.data.id)
-
-    console.log({ decrypted, decryptedError })
+      .single()
 
     const members: Member[] = []
 
@@ -93,12 +77,6 @@ export async function GET(req: NextRequest, { params }: ParamsType) {
       }
     }
 
-    console.log({
-      decryptedError,
-      decrypted,
-      decryptedContent: decrypted,
-    })
-
     const documentData = Array.isArray(document.data.document)
       ? document.data.document[0]
       : document.data.document
@@ -106,7 +84,7 @@ export async function GET(req: NextRequest, { params }: ParamsType) {
     return NextResponse.json({
       ...document.data,
       ...documentData,
-      content: decrypted,
+      content: decrypted?.decrypted_content,
       team: { members, count: team.count },
     })
   } catch (error: any) {
@@ -127,13 +105,9 @@ export async function PATCH(req: Request, { params }: ParamsType) {
       throw new RequestError({ message: 'No values has been passed.' })
     const { name, content } = body
 
-    const {
-      supabase,
-      session,
-      error: sessionError,
-    } = await getSupabaseServerClientInfo()
+    const { session, error: sessionError } = await getSession()
 
-    if (sessionError || !supabase || !session?.user) {
+    if (sessionError || !session?.user) {
       throw new RequestError({
         message:
           sessionError?.message ?? 'There is no connection with the database.',

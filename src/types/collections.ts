@@ -41,6 +41,8 @@ export interface Document
 }
 
 export type ProjectType = Database['public']['Tables']['projects']['Row']
+export type ProjectInputType =
+  Database['public']['Tables']['projects']['Insert']
 
 export interface Project extends ProjectType {
   team: TeamType

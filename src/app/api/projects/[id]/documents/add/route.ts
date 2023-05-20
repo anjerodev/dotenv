@@ -2,7 +2,7 @@ import { NextResponse } from 'next/server'
 
 import { MemberRole } from '@/types/collections'
 import { RequestError } from '@/lib/request-error-handler'
-import { getSupabaseServerClientInfo } from '@/lib/supabase-server'
+import { getSession, supabase } from '@/lib/supabase-server'
 
 type ParamsType = {
   params: { id: string }
@@ -17,13 +17,9 @@ export async function POST(req: Request, { params }: ParamsType) {
       throw new RequestError({ message: 'No values has been passed.' })
     const { name, content } = body
 
-    const {
-      supabase,
-      session,
-      error: sessionError,
-    } = await getSupabaseServerClientInfo()
+    const { session, error: sessionError } = await getSession()
 
-    if (sessionError || !supabase || !session?.user) {
+    if (sessionError || !session?.user) {
       throw new RequestError({
         message:
           sessionError?.message ?? 'There is no connection with the database.',

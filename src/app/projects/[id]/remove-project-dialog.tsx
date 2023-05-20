@@ -1,9 +1,10 @@
 'use client'
 
+import { useTransition } from 'react'
 import { useForm } from '@mantine/form'
 import { DialogProps } from '@radix-ui/react-dialog'
 
-import { Project } from '@/types/collections'
+import { ProjectType } from '@/types/collections'
 import { Button } from '@/components/ui/button'
 import {
   Dialog,
@@ -15,16 +16,22 @@ import {
 } from '@/components/ui/dialog'
 import { Input } from '@/components/ui/input'
 
+import { removeProject } from '../actions'
+
 interface DialogPropsType extends DialogProps {
-  project: Project
+  project: ProjectType
   onSucced?: () => void
+  onError?: () => void
 }
 
 export default function RemoveProjectDialog({
   project,
   onSucced,
+  onError,
   ...other
 }: DialogPropsType) {
+  let [isPending, startTransition] = useTransition()
+
   const form = useForm({
     initialValues: {
       name: '',
@@ -38,7 +45,14 @@ export default function RemoveProjectDialog({
   })
 
   const handleSubmit = ({ name }: { name: string }) => {
-    if (name === project.name && onSucced) onSucced()
+    if (name !== project.name) return
+    startTransition(async () => {
+      const error = await removeProject(project.id)
+      if (error) {
+        onError && onError()
+        return
+      }
+    })
   }
 
   return (
@@ -62,8 +76,13 @@ export default function RemoveProjectDialog({
             <Input placeholder="Project name" {...form.getInputProps('name')} />
           </div>
           <DialogFooter>
-            <Button fullWidth variant="destructive" type="submit">
-              Remove project
+            <Button
+              loading={isPending}
+              fullWidth
+              variant="destructive"
+              type="submit"
+            >
+              {isPending ? 'Removing project' : 'Remove project'}
             </Button>
           </DialogFooter>
         </form>
