@@ -1,13 +1,12 @@
 'use client'
 
 import { createContext, useContext, useEffect } from 'react'
-import { useRouter } from 'next/navigation'
+import { useRouter, useSearchParams } from 'next/navigation'
 import { routes } from '@/constants/routes'
 import { Session } from '@supabase/supabase-js'
 import useSWR from 'swr'
 
 import { Profile } from '@/types/collections'
-import { downloadImage } from '@/lib/download-image'
 
 import { useSupabase } from './supabase-provider'
 
@@ -15,32 +14,29 @@ interface ContextI {
   user: Profile | null | undefined
   error: any
   isLoading: boolean
-  mutate: any
   signOut: () => Promise<void>
   signInWithGithub: () => Promise<string | null>
   signInWithOtp: (email: string) => Promise<string | null>
-  updateCache: (data?: Partial<Profile>) => void
 }
 const Context = createContext<ContextI>({
   user: null,
-  error: null,
+  error: false,
   isLoading: true,
-  mutate: null,
   signOut: async () => {},
   signInWithGithub: async () => null,
   signInWithOtp: async (email: string) => null,
-  updateCache: () => {},
 })
 
-export default function SupabaseAuthProvider({
+export const SupabaseAuthProvider = ({
   serverSession,
   children,
 }: {
   serverSession?: Session | null
   children: React.ReactNode
-}) {
+}) => {
   const { supabase } = useSupabase()
   const router = useRouter()
+  const searchParams = useSearchParams()
 
   // Get USER
   const getUser = async (): Promise<Profile | null> => {
@@ -53,7 +49,10 @@ export default function SupabaseAuthProvider({
       .eq('id', serverSession?.user?.id)
       .single()
 
-    const avatar = await downloadImage({ supabase, path: user?.avatar_url })
+    const avatar = user?.avatar_url
+      ? supabase.storage.from('avatars').getPublicUrl(user?.avatar_url).data
+          .publicUrl
+      : null
 
     if (error) {
       console.log(error)
@@ -67,7 +66,6 @@ export default function SupabaseAuthProvider({
     data: user,
     error,
     isLoading,
-    mutate,
   } = useSWR(serverSession ? 'profile-context' : null, getUser)
 
   // Sign Out
@@ -76,7 +74,8 @@ export default function SupabaseAuthProvider({
     router.push(routes.LOGIN)
   }
 
-  const redirectUrl = 'http://localhost:3000/projects' // TODO: Change for the real url
+  const base = 'http://localhost:3000' // TODO: Change for the real url
+  const redirectUrl = base + (searchParams?.get('from') || routes.PROJECTS)
 
   const options = {
     redirectTo: redirectUrl,
@@ -112,12 +111,6 @@ export default function SupabaseAuthProvider({
     return null
   }
 
-  const updateCache = (data?: Partial<Profile>) => {
-    if (!data) return
-    const newData = Object.assign({}, user, data)
-    mutate(newData)
-  }
-
   // Refresh the Page to Sync Server and Client
   useEffect(() => {
     const {
@@ -137,11 +130,9 @@ export default function SupabaseAuthProvider({
     user,
     error,
     isLoading,
-    mutate,
     signOut,
     signInWithGithub,
     signInWithOtp,
-    updateCache,
   }
 
   return <Context.Provider value={exposed}>{children}</Context.Provider>

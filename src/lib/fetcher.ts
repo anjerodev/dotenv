@@ -3,9 +3,11 @@ import { RequestError } from './request-error-handler'
 export const fetcher = async <T = any>(
   url: string,
   method: 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE' | 'HEAD' = 'GET',
+  next?: any,
   data?: any
 ): Promise<T> => {
   const options: RequestInit = {
+    next,
     method,
     headers: {
       'Content-Type': 'application/json',

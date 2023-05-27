@@ -1,5 +1,4 @@
 import { forwardRef } from 'react'
-import { User } from 'lucide-react'
 
 import { DefaultProps } from '@/types/styles'
 import {
@@ -8,6 +7,7 @@ import {
   AvatarImage,
   AvatarProps,
 } from '@/components/ui/avatar'
+import { Icons } from '@/components/icons'
 
 interface UserAvatarProps extends DefaultProps {
   avatar: string
@@ -20,7 +20,7 @@ const UserAvatar = forwardRef<HTMLDivElement, UserAvatarProps & AvatarProps>(
       <Avatar {...props} ref={ref}>
         <AvatarImage src={avatar} alt={username} />
         <AvatarFallback className="text-muted-foreground">
-          <User />
+          <Icons.user />
         </AvatarFallback>
       </Avatar>
     )

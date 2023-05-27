@@ -6,6 +6,7 @@ import type { Database } from '@/types/supabase'
 
 export async function middleware(req: NextRequest) {
   const res = NextResponse.next()
+  const isAuthPage = req.nextUrl.pathname.startsWith('/login')
 
   const supabase = createMiddlewareSupabaseClient<Database>({
     req,
@@ -16,19 +17,28 @@ export async function middleware(req: NextRequest) {
     data: { session },
   } = await supabase.auth.getSession()
 
+  if (isAuthPage) {
+    if (session) {
+      return NextResponse.redirect(new URL(routes.PROJECTS, req.url))
+    }
+
+    return null
+  }
+
   if (!session) {
-    const url = new URL(req.url)
-    url.pathname = routes.LOGIN
-    return NextResponse.redirect(url)
+    let from = req.nextUrl.pathname
+    if (req.nextUrl.search) {
+      from += req.nextUrl.search
+    }
+
+    return NextResponse.redirect(
+      new URL(`${routes.LOGIN}?from=${encodeURIComponent(from)}`, req.url)
+    )
   }
 
   return res
 }
 
 export const config = {
-  matcher: ['/account', '/projects'],
+  matcher: ['/account', '/projects/:path*', '/login'],
 }
-
-// export const config = {
-//   matcher: '/middleware-protected/:path*',
-// }

@@ -1,21 +1,10 @@
-import Logo from '@/components/Logo'
+import { LoginForm } from '@/components/forms/login-form'
+import Logo from '@/components/logo'
 
-import LoginForm from './login-form'
 import '@/styles/animations.css'
 import Image from 'next/image'
-import { redirect } from 'next/navigation'
-import { routes } from '@/constants/routes'
-
-import { createServerClient } from '@/lib/supabase-server'
 
 export default async function LoginPage() {
-  const supabase = createServerClient()
-  const {
-    data: { user },
-  } = await supabase.auth.getUser()
-
-  if (user) redirect(routes.ACCOUNT)
-
   return (
     <div className="grid min-h-screen w-full grid-cols-1 md:grid-cols-2">
       {/* Left/Top Column */}
@@ -58,7 +47,7 @@ export default async function LoginPage() {
           {/* Translucent Card */}
           <div className="relative w-11/12 max-w-md overflow-hidden rounded-3xl border border-white/20 bg-background/20 px-12 py-16 shadow-lg backdrop-blur-[2px] md:w-4/5">
             <div className="relative z-30">
-              <h1 className="mb-6">
+              <h1 className="mb-6 leading-tight">
                 A simple and secure storage for yours{' '}
                 <span className="font-black text-brand-200 dark:text-brand-500">
                   .env

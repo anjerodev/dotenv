@@ -20,6 +20,9 @@ export type Profile = Database['public']['Tables']['profiles']['Row'] & {
   email: string | undefined | null
 }
 
+export type ProfileInputType =
+  Database['public']['Tables']['profiles']['Insert']
+
 export type DocumentsHistory =
   Database['public']['Tables']['documents_history']['Row']
 
@@ -39,12 +42,14 @@ export interface Document
   team: TeamType
   updated_by: Partial<Member>
 }
+export type DocumentInputType =
+  Database['public']['Tables']['documents']['Insert']
 
 export type ProjectType = Database['public']['Tables']['projects']['Row']
 export type ProjectInputType =
   Database['public']['Tables']['projects']['Insert']
 
 export interface Project extends ProjectType {
+  documents: Document[]
   team: TeamType
-  documents: Partial<Document>[]
 }

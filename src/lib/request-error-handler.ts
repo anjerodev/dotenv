@@ -1,3 +1,9 @@
+export interface RequestErrorType {
+  message: string
+  form?: { [x: string]: any }
+  status?: number
+}
+
 export class RequestError extends Error {
   public status?: number
   public form?: any

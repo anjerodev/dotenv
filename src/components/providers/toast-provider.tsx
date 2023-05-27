@@ -1,11 +1,11 @@
 'use client'
 
 import { ReactNode, createContext } from 'react'
-import { AlertTriangle, Check, Info, X } from 'lucide-react'
 import { useTheme } from 'next-themes'
 import { ExternalToast, Toaster, toast as sonnerToast } from 'sonner'
 
 import { cn } from '@/lib/cn'
+import { Icons } from '@/components/icons'
 
 const Context = createContext(undefined)
 
@@ -52,10 +52,10 @@ const createToast =
     )
 
 export const toast = {
-  success: createToast('success', <Check size="18" />),
-  error: createToast('error', <X size="18" />),
-  info: createToast('info', <Info size="18" />),
-  warning: createToast('warning', <AlertTriangle size="18" />),
+  success: createToast('success', <Icons.check size={18} />),
+  error: createToast('error', <Icons.close size={18} />),
+  info: createToast('info', <Icons.info size={18} />),
+  warning: createToast('warning', <Icons.alert size={18} />),
 }
 
 interface BaseToastType {
@@ -108,7 +108,7 @@ const BaseToast = ({
         className="absolute right-1.5 top-1.5 flex h-6 w-6 cursor-pointer items-center justify-center rounded-full border-none bg-transparent p-0 text-zinc-700 transition-colors duration-200 hover:text-zinc-900 dark:text-zinc-200 hover:dark:text-zinc-400"
         onClick={onDismiss}
       >
-        <X size="16" />
+        <Icons.close size={16} />
       </button>
     </div>
   )

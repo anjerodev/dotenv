@@ -12,11 +12,11 @@ type SupabaseContext = {
 
 const Context = createContext<SupabaseContext | undefined>(undefined)
 
-export default function SupabaseProvider({
+export const SupabaseProvider = ({
   children,
 }: {
   children: React.ReactNode
-}) {
+}) => {
   const [supabase] = useState(() => createClient())
 
   return (

@@ -2,11 +2,11 @@
 
 import { ChangeEvent, useCallback } from 'react'
 import { usePathname, useRouter, useSearchParams } from 'next/navigation'
-import { SearchIcon } from 'lucide-react'
 
 import { Input } from '@/components/ui/input'
+import { Icons } from '@/components/icons'
 
-export default function Search() {
+export function Search() {
   const router = useRouter()
   const pathname = usePathname()
   const searchParams = useSearchParams()!
@@ -36,7 +36,7 @@ export default function Search() {
       placeholder="Search project..."
       leftSection={
         <div className="pl-1 text-muted-foreground">
-          <SearchIcon size={18} />
+          <Icons.search size={18} />
         </div>
       }
       onChange={handleChange}

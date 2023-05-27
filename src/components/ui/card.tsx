@@ -49,7 +49,7 @@ const Card = React.forwardRef(
     ref
   ) => {
     const cardStyle = cn(
-      'card group/card relative h-52 cursor-pointer overflow-hidden rounded-2xl bg-black/10 p-[1.5px] transition-all active:scale-[0.98] dark:bg-white/20',
+      'card group/card relative h-52 cursor-pointer overflow-hidden rounded-2xl bg-foreground/20 p-[1px] transition-all active:scale-[0.98]',
       disabled &&
         'pointer-events-none cursor-default opacity-50 active:scale-100',
       className
@@ -76,7 +76,7 @@ const Card = React.forwardRef(
             </>
           )}
           {/* Card Content Container */}
-          <div className="relative z-[2] flex h-full w-full grow flex-col rounded-[14px] bg-card/80 px-6 py-4">
+          <div className="relative z-[2] flex h-full w-full grow flex-col rounded-[15px] bg-card/80 px-6 py-4">
             {children}
           </div>
         </>

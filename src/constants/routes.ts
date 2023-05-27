@@ -8,20 +8,11 @@ export const routes = {
   GITHUB: 'https://github.com/jepricreations/envox',
   TWITTER: 'https://twitter.com/jepricreations',
 
-  // API
-  // ** Queries
-  API_PROJECT: (id: string) => `/api/projects/${id}`,
-  API_LIST_DOCUMENTS: (id: string) => `/api/projects/${id}/documents`,
-  API_COUNT_DOCUMENTS: (id: string) => `/api/projects/${id}/documents/count`,
-  API_DOCUMENT: ({
-    projectId,
-    documentId,
-  }: {
-    projectId: string
-    documentId: string
-  }) => `/api/projects/${projectId}/documents/${documentId}`,
-  // ** Mutations
-  API_ADD_DOCUMENT: (id: string) => `/api/projects/${id}/documents/add`,
+  PROJECT: (id: string) => `/projects/${id}`,
+  DOCUMENT: (id: string, docId: string) => `/projects/${id}?doc=${docId}`,
+
+  // Api routes
+  API_DOCUMENT: (documentId: string) => `/api/documents/${documentId}`,
 }
 
 export const privatePaths = [routes.ACCOUNT, routes.PROJECTS]

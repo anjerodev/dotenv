@@ -1,4 +1,3 @@
-import 'server-only'
 import '@/styles/globals.css'
 import { Metadata } from 'next'
 
@@ -7,12 +6,10 @@ import { cn } from '@/lib/cn'
 import { fontMono, fontSans } from '@/lib/fonts'
 import { createServerClient } from '@/lib/supabase-server'
 import { SwrProvider } from '@/components/providers/data-fetching-provider'
-import SupabaseAuthProvider from '@/components/providers/supabase-auth-provider'
-import SupabaseProvider from '@/components/providers/supabase-provider'
+import { SupabaseAuthProvider } from '@/components/providers/supabase-auth-provider'
+import { SupabaseProvider } from '@/components/providers/supabase-provider'
 import { ThemeProvider } from '@/components/providers/theme-provider'
 import { ToastProvider } from '@/components/providers/toast-provider'
-
-import MainContainer from './main-container'
 
 export const metadata: Metadata = {
   title: {
@@ -31,11 +28,11 @@ export const metadata: Metadata = {
   },
 }
 
-export default async function RootLayout({
-  children,
-}: {
+interface RootLayoutProps {
   children: React.ReactNode
-}) {
+}
+
+export default async function RootLayout({ children }: RootLayoutProps) {
   const supabase = createServerClient()
   const {
     data: { session },
@@ -50,15 +47,13 @@ export default async function RootLayout({
       <body className="min-h-[100dvh] bg-background font-sans antialiased">
         <ThemeProvider
           attribute="class"
-          enableSystem={false}
           defaultTheme="dark"
+          enableSystem={false}
         >
           <ToastProvider>
             <SupabaseProvider>
               <SupabaseAuthProvider serverSession={session}>
-                <SwrProvider>
-                  <MainContainer session={session}>{children}</MainContainer>
-                </SwrProvider>
+                <SwrProvider>{children}</SwrProvider>
               </SupabaseAuthProvider>
             </SupabaseProvider>
           </ToastProvider>

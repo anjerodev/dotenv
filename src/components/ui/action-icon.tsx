@@ -1,13 +1,11 @@
-'use client'
-
 import * as React from 'react'
 import { VariantProps, cva } from 'class-variance-authority'
-import { Loader2 } from 'lucide-react'
 
 import { DefaultProps } from '@/types/styles'
 import { cn } from '@/lib/cn'
 import { createPolymorphicComponent } from '@/lib/create-polymorphic-component'
 import { UnstyledButton } from '@/components/ui/unstyled-button'
+import { Icons } from '@/components/icons'
 
 const actionIconVariants = cva(
   'transition-all active:scale-[97%] flex inline-flex items-center justify-center rounded-md outline-none ring-ring disabled:opacity-80 disabled:pointer-events-none ring-0 focus-visible:ring-2 focus-visible:ring-offset-0 dark:ring-offset-zinc-800',
@@ -69,7 +67,7 @@ const _ActionIcon = React.forwardRef<HTMLButtonElement, ActionIconProps>(
         {...other}
       >
         {loading ? (
-          <Loader2 className="h-[18px] w-[18px] animate-spin" />
+          <Icons.spinner className="h-[18px] w-[18px] animate-spin" />
         ) : (
           firstChild
         )}
@@ -79,9 +77,8 @@ const _ActionIcon = React.forwardRef<HTMLButtonElement, ActionIconProps>(
 )
 _ActionIcon.displayName = 'ActionIcon'
 
-const ActionIcon = createPolymorphicComponent<
-  'button',
-  ActionIconProps & ActionIconProps
->(_ActionIcon)
+const ActionIcon = createPolymorphicComponent<'button', ActionIconProps>(
+  _ActionIcon
+)
 
 export { ActionIcon, actionIconVariants }
