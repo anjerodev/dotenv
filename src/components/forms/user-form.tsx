@@ -1,7 +1,7 @@
 'use client'
 
 import { Profile } from '@/types/collections'
-import { updateProfile } from '@/lib/mutations/profile'
+import { updateProfile } from '@/lib/server-mutations/profile'
 import {
   profileUserNameSchema,
   profileWebsiteSchema,

@@ -1,11 +1,11 @@
 'use client'
 
 import { useState } from 'react'
+import { useSearchParams } from 'next/navigation'
 import { useForm, zodResolver } from '@mantine/form'
 
-import { createProject } from '@/lib/mutations/project'
-import { projectNameSchema } from '@/lib/validations/project'
-import { useServerMutation } from '@/hooks/useServerMutation'
+import { projectSchema } from '@/lib/validations/project'
+import { useProjects } from '@/hooks/useProjects'
 import { Button } from '@/components/ui/button'
 import { Card, CardsContainer } from '@/components/ui/card'
 import {
@@ -17,43 +17,40 @@ import {
   DialogTrigger,
 } from '@/components/ui/dialog'
 import { Input } from '@/components/ui/input'
+import { Skeleton } from '@/components/ui/skeleton'
 import { Icons } from '@/components/icons'
+import { ProjectCard } from '@/components/project-card'
 
-interface ProjectsContainerProps {
-  disabled?: boolean
-  children: React.ReactNode
-}
-
-export function ProjectsContainer({
-  children,
-  disabled,
-}: ProjectsContainerProps) {
-  const [newOpen, setNewOpen] = useState(false)
-  const [mutate, { isPending }] = useServerMutation()
+export function Projects() {
+  const params = useSearchParams()
+  const search = params.get('search') ?? ''
+  const [open, setOpen] = useState(false)
+  const { data, isLoading, create, isPending } = useProjects()
 
   const form = useForm({
     initialValues: {
       name: '',
     },
-    validate: zodResolver(projectNameSchema),
+    validate: zodResolver(projectSchema),
   })
 
-  const handleSubmit = (values: { name: string }) => {
-    mutate({
-      mutation: createProject(values),
-      onError: (error) => console.log({ error }),
-      onSuccess: () => {
-        setNewOpen(false)
-        form.reset()
-      },
-    })
+  const handleSubmit = async (values: { name: string }) => {
+    try {
+      await create(values)
+      setOpen(false)
+      form.reset()
+    } catch (error) {
+      console.log({ error })
+    }
   }
+
+  const userProjects = data ?? []
 
   return (
     <CardsContainer>
-      <Dialog open={newOpen} onOpenChange={setNewOpen}>
+      <Dialog open={open} onOpenChange={setOpen}>
         <DialogTrigger asChild>
-          <Card disabled={disabled}>
+          <Card disabled={isLoading}>
             <div className="flex grow flex-col items-center justify-center gap-2 font-semibold text-card-foreground">
               <Icons.plus size={32} />
               Add project
@@ -73,7 +70,7 @@ export function ProjectsContainer({
             <DialogFooter>
               <Button
                 disabled={isPending}
-                onClick={() => setNewOpen(false)}
+                onClick={() => setOpen(false)}
                 variant="subtle"
               >
                 Discard
@@ -85,7 +82,28 @@ export function ProjectsContainer({
           </form>
         </DialogContent>
       </Dialog>
-      {children}
+      {isLoading ? (
+        <Loading />
+      ) : (
+        userProjects
+          .filter((project) =>
+            project.name
+              .toLocaleLowerCase()
+              .includes(search.trim().toLocaleLowerCase())
+          )
+          .map((project) => <ProjectCard key={project.id} project={project} />)
+      )}
     </CardsContainer>
   )
 }
+
+const Loading = () => (
+  <>
+    {new Array(2).fill('').map((_, idx) => (
+      <Skeleton
+        key={`projects-item-${idx}`}
+        className="h-[208px] w-full rounded-2xl"
+      />
+    ))}
+  </>
+)

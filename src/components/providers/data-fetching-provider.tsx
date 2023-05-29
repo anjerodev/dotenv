@@ -3,7 +3,6 @@
 import { SWRConfig } from 'swr'
 
 const options = {
-  revalidateIfStale: false,
   revalidateOnFocus: false,
   shouldRetryOnError: false,
 }

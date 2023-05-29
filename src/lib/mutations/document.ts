@@ -1,123 +1,25 @@
-'use server'
-
-import { revalidatePath } from 'next/cache'
-import { routes } from '@/constants/routes'
-
-import { MutationReturnType } from '@/types/actions'
-import { DocumentInputType, MemberRole } from '@/types/collections'
+import 'server-only'
+import { MemberRole } from '@/types/collections'
+import { RequestError } from '@/lib/request-error-handler'
 import { supabase as admin, getSession } from '@/lib/supabase-server'
 
-export async function addDocument(
-  values: DocumentInputType & { content: string }
+export async function createDocument(
+  projectId: string,
+  values: { name: string; content: string }
 ) {
-  if (!values) return { error: { message: 'No values has been passed.' } }
+  try {
+    if (!values) return { error: { message: 'No values has been passed.' } }
 
-  const { supabase, session, error: sessionError } = await getSession()
+    const { supabase, session, error: sessionError } = await getSession()
 
-  if (sessionError) {
-    return {
-      error: {
+    if (sessionError) {
+      throw new RequestError({
         message:
           sessionError?.message ?? 'There is no connection with the database.',
-      },
+        status: sessionError?.status,
+      })
     }
-  }
 
-  // Check that there is not a document with the same name in the project
-  const { data: prevDoc } = await supabase
-    .from('documents')
-    .select('id')
-    .match({ name: values.name, project_id: values.project_id })
-    .limit(1)
-    .single()
-
-  if (prevDoc) {
-    return {
-      error: {
-        message: 'Validation fail.',
-        form: {
-          name: 'The document already exist, please, use another name.',
-        },
-      },
-    }
-  }
-
-  const { data: document, error } = await supabase
-    .from('documents')
-    .insert({ name: values.name, project_id: values.project_id })
-    .select()
-    .single()
-
-  if (error) {
-    console.error(error)
-    return { error: { message: 'Error creating the new document.' } }
-  }
-
-  const insertValues = {
-    document_id: document.id,
-    content: values.content,
-    updated_by: session.user.id,
-  }
-
-  // Avoid the creation of the encrypted content value if it is not provided
-  const historyPromise = values.content
-    ? await admin.from('documents_history').insert(insertValues)
-    : await supabase.from('documents_history').insert(insertValues)
-
-  const memberPromise = supabase.from('documents_members').insert({
-    document_id: document.id,
-    role: MemberRole.Owner,
-    user_id: session.user.id,
-    project_id: values.project_id,
-  })
-
-  const [history, member] = await Promise.all([historyPromise, memberPromise])
-
-  const creationError = history.error || member.error
-
-  if (creationError) {
-    console.error(creationError)
-    return {
-      error: {
-        message: 'Error creating the new document.',
-      },
-    }
-  }
-
-  revalidatePath(routes.PROJECT(values.project_id))
-  revalidatePath(routes.PROJECTS)
-  return { error: null }
-}
-
-interface UpdateDocumentInput {
-  name: string | null
-  content: string
-}
-
-export async function updateDocument({
-  projectId,
-  id,
-  values,
-}: {
-  projectId: string
-  id: string
-  values: UpdateDocumentInput
-}): Promise<MutationReturnType> {
-  const { supabase, session, error: sessionError } = await getSession()
-
-  if (sessionError) {
-    return {
-      error: {
-        message:
-          sessionError?.message ?? 'There is no connection with the database.',
-      },
-    }
-  }
-
-  if (!projectId || !id || !values)
-    return { error: { message: 'No values has been passed.' } }
-
-  if (values.name) {
     // Check that there is not a document with the same name in the project
     const { data: prevDoc } = await supabase
       .from('documents')
@@ -127,47 +29,164 @@ export async function updateDocument({
       .single()
 
     if (prevDoc) {
-      return {
-        error: {
+      throw new RequestError({
+        message: 'Validation fail.',
+        form: {
+          name: 'The document already exist, please, use another name.',
+        },
+      })
+    }
+
+    const { data: document, error } = await supabase
+      .from('documents')
+      .insert({ name: values.name, project_id: projectId })
+      .select()
+      .single()
+
+    if (error) {
+      console.error(error)
+      throw new RequestError({
+        message: 'Error creating the new document.',
+      })
+    }
+
+    const insertValues = {
+      document_id: document.id,
+      content: values.content,
+      updated_by: session.user.id,
+    }
+
+    const historyPromise = await admin
+      .from('documents_history')
+      .insert(insertValues)
+
+    const memberPromise = supabase
+      .from('documents_members')
+      .insert({
+        document_id: document.id,
+        role: MemberRole.Owner,
+        user_id: session.user.id,
+        project_id: projectId,
+      })
+      .select('role, profile:profiles(id, username, avatar_url)')
+      .single()
+
+    const [history, member] = await Promise.all([historyPromise, memberPromise])
+
+    const creationError = history.error || member.error
+
+    if (creationError) {
+      console.error(creationError)
+      throw new RequestError({
+        message: 'Error creating document nested rows',
+      })
+    }
+
+    const profile =
+      member.data.profile && Array.isArray(member.data.profile)
+        ? member.data.profile[0]
+        : member.data.profile
+    const avatar = profile?.avatar_url
+      ? supabase.storage.from('avatars').getPublicUrl(profile.avatar_url).data
+          .publicUrl
+      : null
+    const memberData = { role: member.data.role, avatar, ...profile }
+
+    return { ...document, team: { members: [memberData], count: 1 } }
+  } catch (error) {
+    throw error
+  }
+}
+
+export async function updateDocument(
+  projectId: string,
+  documentId: string,
+  values: { name: string; content: string }
+) {
+  try {
+    const { supabase, user, error: sessionError } = await getSession()
+
+    if (sessionError) {
+      throw new RequestError({
+        message:
+          sessionError?.message ?? 'There is no connection with the database.',
+        status: sessionError?.status,
+      })
+    }
+
+    if (!projectId || !documentId || !values)
+      throw new RequestError({
+        message: 'No values has been passed',
+      })
+
+    console.log({ projectId, documentId, values, user })
+
+    if (values.name) {
+      // Check that there is not a document with the same name in the project
+      const { data: prevDoc } = await supabase
+        .from('documents')
+        .select('id')
+        .match({ name: values.name, project_id: projectId })
+        .limit(1)
+        .single()
+
+      if (prevDoc) {
+        throw new RequestError({
           message: 'Validation fail.',
           form: {
             name: 'The document already exist, please, use another name.',
           },
-        },
+        })
+      }
+
+      const { error } = await supabase
+        .from('documents')
+        .update({ name: values.name })
+        .eq('id', documentId)
+
+      if (error) {
+        console.log(error)
+        throw new RequestError({
+          message: 'The document name could not be updated.',
+        })
       }
     }
 
-    const { error } = await supabase
-      .from('documents')
-      .update({ name: values.name })
-      .eq('id', id)
+    const { data: history, error } = await admin
+      .from('documents_history')
+      .insert({
+        document_id: documentId,
+        content: values.content,
+        updated_by: user.id,
+      })
+      .select(
+        'id, document_id,updated_at, document:documents(*), updated_by:profiles(id, username, avatar_url)'
+      )
+      .single()
 
     if (error) {
-      console.log(error)
-      return {
-        error: {
-          message: 'The document name could not be updated.',
-        },
-      }
+      throw new RequestError({
+        message: 'Error updating the document.',
+      })
     }
+
+    const documentData = Array.isArray(history.document)
+      ? history.document[0]
+      : history.document
+
+    const updatedBy = Array.isArray(history.updated_by)
+      ? history.updated_by[0]
+      : history.updated_by
+
+    const data = {
+      ...documentData,
+      updated_at: history.updated_at,
+      updated_by: updatedBy,
+      content: values.content,
+    }
+
+    return data
+  } catch (error) {
+    throw error
   }
-
-  const insertValues = {
-    document_id: id,
-    content: values.content,
-    updated_by: session.user.id,
-  }
-
-  const { error } = values.content
-    ? await admin.from('documents_history').insert(insertValues)
-    : await supabase.from('documents_history').insert(insertValues)
-
-  if (error) {
-    return { error: { message: 'Error creating the new document.' } }
-  }
-
-  revalidatePath(routes.PROJECT(projectId))
-  revalidatePath(routes.PROJECTS)
-
-  return { error: null }
 }

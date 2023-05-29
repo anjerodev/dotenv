@@ -9,11 +9,10 @@ import utc from 'dayjs/plugin/utc'
 
 import { MemberRole, ProjectType } from '@/types/collections'
 import { cn } from '@/lib/cn'
-import { addDocument, updateDocument } from '@/lib/mutations/document'
 import { useClipboard } from '@/hooks/useClipboard'
 import useDocument from '@/hooks/useDocument'
+import { useDocuments } from '@/hooks/useDocuments'
 import { useDownloadFile } from '@/hooks/useDownloadFile'
-import { useServerMutation } from '@/hooks/useServerMutation'
 import useSetParams from '@/hooks/useSetParams'
 import { ActionIcon } from '@/components/ui/action-icon'
 import { Button } from '@/components/ui/button'
@@ -55,11 +54,15 @@ export default function DocumentDialog({
   const documentId = searchParams.get('doc')
   const { user } = useAuth()
   const { cleanParams } = useSetParams()
-  const router = useRouter()
 
-  const { data, isLoading, mutate } = useDocument(documentId)
-
-  const [serverMutate, { isPending }] = useServerMutation()
+  const initialLoading = typeof open === 'string'
+  const {
+    data,
+    isLoading,
+    update,
+    isPending: isUpdating,
+  } = useDocument({ id: documentId, initialLoading })
+  const { create, isPending: isCreating } = useDocuments(project.id)
 
   const [isFocused, setIsFocused] = useState(false)
 
@@ -111,7 +114,7 @@ export default function DocumentDialog({
   }
 
   const onClose = () => {
-    if (project) {
+    if (documentId) {
       cleanParams()
     }
     onOpenChange(false)
@@ -132,47 +135,31 @@ export default function DocumentDialog({
   }
 
   const handleSubmit = async (values: FormType) => {
-    if (data) {
-      // Is updating
-      // If the name does not change, we pass it as null to avoid check documents with the same name within the project
-      const newName = values.name !== data!.name ? values.name : null
-      serverMutate({
-        mutation: updateDocument({
-          projectId: project.id,
-          id: data!.id,
-          values: {
-            name: newName,
-            content: values.content,
-          },
-        }),
-        onError: handleError,
-        onSuccess: () => {
-          toast.success('Success', {
-            description:
-              'Woohoo! The document update is complete and everything is looking spick and span.',
-          })
-          mutate()
-          onClose()
-          router.refresh()
-        },
-      })
-    } else {
-      // Is creating a new document
-      serverMutate({
-        mutation: addDocument({
-          project_id: project.id,
-          name: values.name,
+    try {
+      if (data) {
+        // Is updating
+        // If the name does not change, we pass it as null to avoid check documents with the same name within the project
+        const newName = values.name !== data!.name ? values.name : null
+        await update(project.id, {
+          name: newName,
           content: values.content,
-        }),
-        onError: handleError,
-        onSuccess: () => {
-          toast.success('Success', {
-            description:
-              'Congratulations! The document has been created successfully. Time to fill it with your secrets!',
-          })
-          onClose()
-        },
-      })
+        })
+        toast.success('Success', {
+          description:
+            'Woohoo! The document update is complete and everything is looking spick and span.',
+        })
+        onClose()
+      } else {
+        // Is creating a new document
+        await create(values)
+        toast.success('Success', {
+          description:
+            'Congratulations! The document has been created successfully.',
+        })
+        onClose()
+      }
+    } catch (error: any) {
+      handleError(error)
     }
   }
 
@@ -193,6 +180,8 @@ export default function DocumentDialog({
 
   const updatedDate =
     data?.updated_at && dayjs(data?.updated_at).format('MMM DD, YYYY')
+
+  const isPending = isCreating || isUpdating
 
   return (
     <Dialog open={Boolean(open)} onOpenChange={onOpenChange}>
@@ -228,18 +217,14 @@ export default function DocumentDialog({
                 {...form.getInputProps('name')}
               />
             )}
-            {documentId && (
-              <>
-                {isLoading || !data?.team ? (
-                  <TeamAvatars loading />
-                ) : (
-                  <TeamDialog
-                    title={form.values.name}
-                    team={data?.team.members}
-                    canEdit={userRole === MemberRole.Owner}
-                  />
-                )}
-              </>
+            {isLoading ? (
+              <TeamAvatars loading />
+            ) : (
+              <TeamDialog
+                title={form.values.name}
+                team={data?.team.members ?? []}
+                canEdit={userRole === MemberRole.Owner}
+              />
             )}
           </div>
 
@@ -324,7 +309,7 @@ export default function DocumentDialog({
             )}
           </div>
           <DialogFooter>
-            {documentId && (
+            {(documentId || initialLoading) && (
               <div className="flex grow flex-col">
                 <span className="text-sm text-muted-foreground">
                   Last update

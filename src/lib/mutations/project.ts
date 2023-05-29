@@ -1,75 +1,120 @@
-'use server'
+import 'server-only'
+import { RequestError } from '@/lib/request-error-handler'
+import { getSession } from '@/lib/supabase-server'
+import { editProjectSchema, projectSchema } from '@/lib/validations/project'
 
-import { revalidatePath } from 'next/cache'
-import { redirect } from 'next/navigation'
-import { routes } from '@/constants/routes'
+export async function createProject(values: { [x: string]: any }) {
+  try {
+    const { supabase, error: sessionError } = await getSession()
 
-import { MutationReturnType } from '@/types/actions'
-import { ProjectInputType } from '@/types/collections'
-import { createServerClient } from '@/lib/supabase-server'
-import { projectNameSchema } from '@/lib/validations/project'
+    if (sessionError) {
+      throw new RequestError({
+        message:
+          sessionError?.message ?? 'There is no connection with the database.',
+        status: sessionError?.status,
+      })
+    }
 
-export async function createProject(
-  values: ProjectInputType
-): Promise<MutationReturnType> {
-  const supabase = createServerClient()
-  const payload = projectNameSchema.safeParse(values)
+    const payload = projectSchema.safeParse(values)
 
-  if (!payload.success) {
-    return { error: { message: 'The form validation has not passed.' } }
+    if (!payload.success) {
+      return { error: { message: 'The form validation has not passed.' } }
+    }
+
+    const { data: project, error } = await supabase
+      .from('projects')
+      .insert(payload.data)
+      .select()
+      .single()
+
+    if (error) {
+      throw new RequestError({
+        message: error?.message ?? 'Error creting the new project.',
+      })
+    }
+
+    return project
+  } catch (error) {
+    throw error
   }
-
-  const { error } = await supabase.from('projects').insert(payload.data)
-
-  if (error) return { error: { message: error.message } }
-
-  revalidatePath(routes.PROJECTS)
-  return { error: null }
 }
 
-export async function removeProject(id: string): Promise<MutationReturnType> {
-  const supabase = createServerClient()
-  const { error } = await supabase.from('projects').delete().eq('id', id)
+export async function updateProject(id: string, values: { [x: string]: any }) {
+  try {
+    const { supabase, error: sessionError } = await getSession()
 
-  if (error) return { error: { message: error.message } }
-  redirect(routes.PROJECTS)
+    if (sessionError) {
+      throw new RequestError({
+        message:
+          sessionError?.message ?? 'There is no connection with the database.',
+        status: sessionError?.status,
+      })
+    }
+
+    const payload = editProjectSchema.safeParse(values)
+
+    if (!payload.success) {
+      throw new RequestError({
+        message: 'The form validation has not passed.',
+      })
+    }
+
+    const parsedValues = payload.data
+
+    const projectUpdatePromise = supabase
+      .from('projects')
+      .update({ name: parsedValues.name })
+      .eq('id', id)
+      .select()
+      .single()
+
+    const documentsUpdatePromise = supabase
+      .from('documents')
+      .delete()
+      .in('id', parsedValues.removedDocs)
+      .select('id, name')
+
+    const [project, documents] = await Promise.all([
+      projectUpdatePromise,
+      documentsUpdatePromise,
+    ])
+
+    const error = project.error || documents.error
+
+    if (error) {
+      throw new RequestError({
+        message: error?.message,
+      })
+    }
+
+    const data = { ...project.data, documents: documents.data }
+    return data
+  } catch (error) {
+    throw error
+  }
 }
 
-interface UpdateProjectInput {
-  name: string
-  removedDocs: string[]
-}
+export async function removeProject(id: string) {
+  try {
+    const { supabase, error: sessionError } = await getSession()
 
-export async function updateProject(
-  id: string,
-  values: UpdateProjectInput
-): Promise<MutationReturnType> {
-  const supabase = createServerClient()
-  const projectUpdatePromise = supabase
-    .from('projects')
-    .update({ name: values.name })
-    .eq('id', id)
+    if (sessionError) {
+      throw new RequestError({
+        message:
+          sessionError?.message ?? 'There is no connection with the database.',
+        status: sessionError?.status,
+      })
+    }
 
-  const documentsUpdatePromise = supabase
-    .from('documents')
-    .delete()
-    .in('id', values.removedDocs)
+    const { error } = await supabase.from('projects').delete().eq('id', id)
 
-  const [projectError, documentsError] = await Promise.all([
-    projectUpdatePromise,
-    documentsUpdatePromise,
-  ])
-
-  const error = projectError.error || documentsError.error
-
-  if (error) return { error: { message: error.message } }
-
-  /**
-   * For some reason revalidate the path /projects does not works
-   * TODO: Find the way to revalidate the /projects page
-   */
-  revalidatePath(routes.PROJECTS)
-  revalidatePath(routes.PROJECT(id))
-
-  return { error: null }
+    if (error) {
+      throw new RequestError({
+        message: error?.message,
+      })
+    }
+    return { id }
+  } catch (error) {
+    throw error
+  }
 }

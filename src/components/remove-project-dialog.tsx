@@ -1,11 +1,12 @@
 'use client'
 
+import { useRouter } from 'next/navigation'
+import { routes } from '@/constants/routes'
 import { useForm } from '@mantine/form'
 import { DialogProps } from '@radix-ui/react-dialog'
 
 import { ProjectType } from '@/types/collections'
-import { removeProject } from '@/lib/mutations/project'
-import { useServerMutation } from '@/hooks/useServerMutation'
+import { useProject } from '@/hooks/useProject'
 import { Button } from '@/components/ui/button'
 import {
   Dialog,
@@ -27,7 +28,8 @@ export default function RemoveProjectDialog({
   project,
   ...other
 }: DialogPropsType) {
-  const [mutate, { isPending }] = useServerMutation()
+  const router = useRouter()
+  const { remove, isRemoving } = useProject(project.id)
 
   const form = useForm({
     initialValues: {
@@ -41,14 +43,15 @@ export default function RemoveProjectDialog({
     }),
   })
 
-  const handleSubmit = ({ name }: { name: string }) => {
+  const handleSubmit = async ({ name }: { name: string }) => {
     if (name !== project.name) return
-    mutate({
-      mutation: removeProject(project.id),
-      onError: (error) => {
-        // TODO: Handle error
-      },
-    })
+    try {
+      await remove()
+      router.refresh()
+      router.push(routes.PROJECTS)
+    } catch (error) {
+      // TODO: handle error
+    }
   }
 
   return (
@@ -73,12 +76,12 @@ export default function RemoveProjectDialog({
           </div>
           <DialogFooter>
             <Button
-              loading={isPending}
+              loading={isRemoving}
               fullWidth
               variant="destructive"
               type="submit"
             >
-              {isPending ? 'Removing project' : 'Remove project'}
+              {isRemoving ? 'Removing project' : 'Remove project'}
             </Button>
           </DialogFooter>
         </form>

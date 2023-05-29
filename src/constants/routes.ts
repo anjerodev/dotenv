@@ -12,7 +12,12 @@ export const routes = {
   DOCUMENT: (id: string, docId: string) => `/projects/${id}?doc=${docId}`,
 
   // Api routes
-  API_DOCUMENT: (documentId: string) => `/api/documents/${documentId}`,
+  API_DOCUMENTS: (projectId: string) => `/api/projects/${projectId}/documents`,
+  API_DOCUMENT: (id: string) => `/api/documents/${id}`,
+  API_PROJECT_DOCUMENT: (projectId: string, documentId: string) =>
+    `/api/projects/${projectId}/documents/${documentId}`,
+  API_PROJECTS: '/api/projects',
+  API_PROJECT: (id: string) => `/api/projects/${id}`,
 }
 
 export const privatePaths = [routes.ACCOUNT, routes.PROJECTS]

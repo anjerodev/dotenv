@@ -16,7 +16,7 @@ export default async function DashboardLayout({
       <Navbar>
         <UserMenu user={user!} />
       </Navbar>
-      <main className="relative z-10 flex min-h-[100dvh] w-full pt-16">
+      <main className="relative z-10 min-h-[100dvh] w-full pt-16">
         {children}
       </main>
     </div>

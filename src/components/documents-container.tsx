@@ -5,10 +5,10 @@ import Link from 'next/link'
 import { routes } from '@/constants/routes'
 import dayjs from 'dayjs'
 
-import { Document, Project, ProjectType } from '@/types/collections'
+import { Document, ProjectType } from '@/types/collections'
 import { cn } from '@/lib/cn'
-import { updateProject } from '@/lib/mutations/project'
-import { useServerMutation } from '@/hooks/useServerMutation'
+import { useDocuments } from '@/hooks/useDocuments'
+import { useProject } from '@/hooks/useProject'
 import useSetParams from '@/hooks/useSetParams'
 import { ActionIcon } from '@/components/ui/action-icon'
 import { Button } from '@/components/ui/button'
@@ -21,6 +21,7 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
 import { Input } from '@/components/ui/input'
+import { Skeleton } from '@/components/ui/skeleton'
 import {
   Tooltip,
   TooltipContent,
@@ -41,18 +42,25 @@ type State = {
 
 type ProjectDocument = Omit<Document, 'updated_by' | 'content'>
 
-interface ProjectInfo extends Omit<Project, 'team' | 'documents'> {
-  documents: ProjectDocument[]
-}
-
 interface DocumentsContainerProps {
-  project: ProjectInfo
+  projectId: string
 }
 
-export function DocumentsContainer({ project }: DocumentsContainerProps) {
+export function DocumentsContainer({ projectId }: DocumentsContainerProps) {
   const { setParams } = useSetParams()
   const [open, setOpen] = useState<boolean | string>(false)
-  const [mutate, { isPending }] = useServerMutation()
+  const {
+    data: project,
+    isLoading: isProjectLoading,
+    mutate: mutateProject,
+    update,
+    isPending,
+  } = useProject(projectId)
+  const {
+    data: documents,
+    isLoading: areDocumentsLoading,
+    mutate: mutateDocuments,
+  } = useDocuments(projectId)
 
   const [state, setState] = useReducer(
     (prevState: State, newState: Partial<State>): State => ({
@@ -67,8 +75,10 @@ export function DocumentsContainer({ project }: DocumentsContainerProps) {
   )
 
   useEffect(() => {
-    setState({ updates: { ...state.updates, name: project.name } })
-  }, [])
+    if (project) {
+      setState({ updates: { ...state.updates, name: project.name } })
+    }
+  }, [project])
 
   const openDocument = (value: string) => {
     setParams('doc', value)
@@ -80,27 +90,28 @@ export function DocumentsContainer({ project }: DocumentsContainerProps) {
   }
 
   const handleSaveChanges = async () => {
-    mutate({
-      mutation: updateProject(project.id, state.updates),
-      onError: () => {
-        toast.error('Error updating', {
-          description:
-            "Murphy's Law strikes again! We encountered an error while updating the project. But fear not, we won't let this little setback stop us. Let's give it another go!",
-        })
-      },
-      onSuccess: () => {
-        toast.error('Error updating', {
-          description:
-            "Murphy's Law strikes again! We encountered an error while updating the project. But fear not, we won't let this little setback stop us. Let's give it another go!",
-        })
-      },
-    })
+    try {
+      await update(state.updates)
+      mutateDocuments()
+      mutateProject()
+      changeEditing()
+      toast.success('Success!', {
+        description:
+          "Woohoo! The project update was a success. You've got some serious updating skills!",
+      })
+    } catch (error) {
+      console.log({ error })
+      toast.error('Error updating', {
+        description:
+          "Murphy's Law strikes again! We encountered an error while updating the project. But fear not, we won't let this little setback stop us. Let's give it another go!",
+      })
+    }
   }
 
   const handleDiscardChanges = () => {
     setState({
       editing: !state.editing,
-      updates: { name: project?.name ?? '', removedDocs: [] },
+      updates: { ...state.updates, name: project?.name ?? '', removedDocs: [] },
     })
   }
 
@@ -139,16 +150,27 @@ export function DocumentsContainer({ project }: DocumentsContainerProps) {
           All projects
         </Button>
         <Icons.chevronRight size={16} />
-        {state.editing ? (
-          <Input
-            disabled={isPending}
-            placeholder="Please, fill it up"
-            value={state.updates.name}
-            onChange={handleNameChange}
-          />
-        ) : (
-          <div className="font-mono text-2xl font-bold">{project.name}</div>
-        )}
+
+        {(() => {
+          if (isProjectLoading)
+            return (
+              <div className="grow">
+                <Skeleton className="h-4 w-36" />
+              </div>
+            )
+          if (state.editing)
+            return (
+              <Input
+                disabled={isPending}
+                placeholder="Please, fill it up"
+                value={state.updates.name}
+                onChange={handleNameChange}
+              />
+            )
+          return (
+            <div className="font-mono text-2xl font-bold">{project?.name}</div>
+          )
+        })()}
 
         <div className="flex grow items-center justify-end">
           {state.editing ? (
@@ -161,79 +183,91 @@ export function DocumentsContainer({ project }: DocumentsContainerProps) {
             <ProjectMenu
               onEdit={changeEditing}
               onRemove={() => handleRemoveProjectDialog(true)}
-              disabled={!project}
+              disabled={isProjectLoading || areDocumentsLoading || !project}
             />
           )}
         </div>
       </div>
       <Documents
-        disabled={state.editing}
+        disabled={state.editing || areDocumentsLoading}
         project={project}
         open={open}
         setOpen={setOpen}
       >
-        {project.documents?.map((document: ProjectDocument) => (
-          <div key={document.id} className="group/card relative">
-            <Card
-              onClick={() => openDocument(document.id)}
-              disabled={state.editing}
-              className={cn(
-                'relative z-0 h-fit w-full text-start animate-in fade-in-50 zoom-in-90',
-                state.updates.removedDocs.includes(document.id) && 'opacity-10'
-              )}
-            >
-              <div className="truncate text-lg font-medium">
-                {document.name}
-              </div>
-              <span className="mt-1 text-sm text-card-foreground/50">
-                {dayjs(document.updated_at).format('MMM DD, YYYY')}
-              </span>
-              <div className="mt-2 flex justify-end">
-                <TeamAvatars
-                  team={document.team?.members}
-                  count={document.team?.count}
+        {areDocumentsLoading
+          ? new Array(2)
+              .fill('')
+              .map((_, index) => (
+                <Skeleton
+                  key={index}
+                  className="h-[130px] w-full rounded-2xl"
                 />
+              ))
+          : documents.map((document: ProjectDocument) => (
+              <div key={document.id} className="group/card relative">
+                <Card
+                  onClick={() => openDocument(document.id)}
+                  disabled={state.editing}
+                  className={cn(
+                    'relative z-0 h-fit w-full text-start animate-in fade-in-50 zoom-in-90',
+                    state.updates.removedDocs.includes(document.id) &&
+                      'opacity-10'
+                  )}
+                >
+                  <div className="truncate text-lg font-medium">
+                    {document.name}
+                  </div>
+                  <span className="mt-1 text-sm text-card-foreground/50">
+                    {dayjs(document.updated_at).format('MMM DD, YYYY')}
+                  </span>
+                  <div className="mt-2 flex justify-end">
+                    <TeamAvatars
+                      team={document.team?.members}
+                      count={document.team?.count}
+                    />
+                  </div>
+                </Card>
+                {state.editing &&
+                  (() => {
+                    // Delete document
+                    if (!state.updates.removedDocs.includes(document.id)) {
+                      return (
+                        <ActionIcon
+                          onClick={() => handleRemovedDocs(document.id)}
+                          className="group/button absolute -right-2 -top-2 z-10 rounded-full border border-foreground/10 bg-background text-destructive shadow-lg hover:bg-[#fdecec]  dark:text-destructive dark:hover:bg-[#2a191b]"
+                        >
+                          <Icons.trash
+                            size={20}
+                            className="group-hover/button:!animate-none group-hover/card:animate-shaking"
+                          />
+                        </ActionIcon>
+                      )
+                    }
+                    // Undo deletion
+                    if (state.updates.removedDocs.includes(document.id)) {
+                      return (
+                        <ActionIcon
+                          onClick={() => handleRemovedDocs(document.id)}
+                          className="group/button absolute -right-2 -top-2 z-10 rounded-full border border-foreground/10 bg-background text-foreground shadow-lg hover:bg-background/80"
+                        >
+                          <Icons.undo
+                            size={20}
+                            className="group-hover/button:!animate-none group-hover/card:animate-shaking"
+                          />
+                        </ActionIcon>
+                      )
+                    }
+                  })()}
               </div>
-            </Card>
-            {state.editing &&
-              (() => {
-                // Delete document
-                if (!state.updates.removedDocs.includes(document.id)) {
-                  return (
-                    <ActionIcon
-                      onClick={() => handleRemovedDocs(document.id)}
-                      className="group/button absolute -right-2 -top-2 z-10 rounded-full border border-foreground/10 bg-background text-destructive shadow-lg hover:bg-[#fdecec]  dark:text-destructive dark:hover:bg-[#2a191b]"
-                    >
-                      <Icons.trash
-                        size={20}
-                        className="group-hover/button:!animate-none group-hover/card:animate-shaking"
-                      />
-                    </ActionIcon>
-                  )
-                }
-                // Undo deletion
-                if (state.updates.removedDocs.includes(document.id)) {
-                  return (
-                    <ActionIcon
-                      onClick={() => handleRemovedDocs(document.id)}
-                      className="group/button absolute -right-2 -top-2 z-10 rounded-full border border-foreground/10 bg-background text-foreground shadow-lg hover:bg-background/80"
-                    >
-                      <Icons.undo
-                        size={20}
-                        className="group-hover/button:!animate-none group-hover/card:animate-shaking"
-                      />
-                    </ActionIcon>
-                  )
-                }
-              })()}
-          </div>
-        ))}
+            ))}
       </Documents>
-      <RemoveProjectDialog
-        open={state.removeProjectDialogIsOpen}
-        onOpenChange={handleRemoveProjectDialog}
-        project={project}
-      />
+      {project && (
+        <RemoveProjectDialog
+          open={state.removeProjectDialogIsOpen}
+          onOpenChange={handleRemoveProjectDialog}
+          project={project}
+        />
+      )}
     </>
   )
 }
