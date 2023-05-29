@@ -99,12 +99,11 @@ export async function createDocument(
 }
 
 export async function updateDocument(
-  projectId: string,
   documentId: string,
-  values: { name: string; content: string }
+  args: { projectId: string; values: { name: string; content: string } }
 ) {
   try {
-    const { supabase, user, error: sessionError } = await getSession()
+    const { supabase, session, error: sessionError } = await getSession()
 
     if (sessionError) {
       throw new RequestError({
@@ -114,19 +113,17 @@ export async function updateDocument(
       })
     }
 
-    if (!projectId || !documentId || !values)
+    if (!documentId || !args)
       throw new RequestError({
         message: 'No values has been passed',
       })
 
-    console.log({ projectId, documentId, values, user })
-
-    if (values.name) {
+    if (args.values.name) {
       // Check that there is not a document with the same name in the project
       const { data: prevDoc } = await supabase
         .from('documents')
         .select('id')
-        .match({ name: values.name, project_id: projectId })
+        .match({ name: args.values.name, project_id: args.projectId })
         .limit(1)
         .single()
 
@@ -141,7 +138,7 @@ export async function updateDocument(
 
       const { error } = await supabase
         .from('documents')
-        .update({ name: values.name })
+        .update({ name: args.values.name })
         .eq('id', documentId)
 
       if (error) {
@@ -156,8 +153,8 @@ export async function updateDocument(
       .from('documents_history')
       .insert({
         document_id: documentId,
-        content: values.content,
-        updated_by: user.id,
+        content: args.values.content,
+        updated_by: session.user.id,
       })
       .select(
         'id, document_id,updated_at, document:documents(*), updated_by:profiles(id, username, avatar_url)'
@@ -182,7 +179,7 @@ export async function updateDocument(
       ...documentData,
       updated_at: history.updated_at,
       updated_by: updatedBy,
-      content: values.content,
+      content: args.values.content,
     }
 
     return data

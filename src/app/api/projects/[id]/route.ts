@@ -1,4 +1,6 @@
+import { redirect } from 'next/navigation'
 import { NextResponse } from 'next/server'
+import { routes } from '@/constants/routes'
 
 import { getProject } from '@/lib/fetching/projects'
 import { removeProject, updateProject } from '@/lib/mutations/project'
@@ -11,6 +13,7 @@ export async function GET(req: Request, { params }: ParamsType) {
   try {
     const id = params.id
     const data = await getProject(id)
+
     return NextResponse.json(data)
   } catch (error: any) {
     return new Response(

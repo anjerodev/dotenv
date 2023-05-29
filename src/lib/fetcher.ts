@@ -28,7 +28,6 @@ export const fetcher = async <T = any>(
 
     return response.json()
   } catch (error) {
-    console.log({ error })
     throw error
   }
 }

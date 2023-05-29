@@ -138,7 +138,10 @@ export default function DocumentDialog({
     try {
       if (data) {
         // Is updating
-        // If the name does not change, we pass it as null to avoid check documents with the same name within the project
+        /**
+         * If the name does not change, we pass it as null to avoid
+         * check documents with the same name within the project
+         */
         const newName = values.name !== data!.name ? values.name : null
         await update(project.id, {
           name: newName,
@@ -217,14 +220,18 @@ export default function DocumentDialog({
                 {...form.getInputProps('name')}
               />
             )}
-            {isLoading ? (
-              <TeamAvatars loading />
-            ) : (
-              <TeamDialog
-                title={form.values.name}
-                team={data?.team.members ?? []}
-                canEdit={userRole === MemberRole.Owner}
-              />
+            {(initialLoading || documentId) && (
+              <>
+                {isLoading ? (
+                  <TeamAvatars loading />
+                ) : (
+                  <TeamDialog
+                    title={form.values.name}
+                    team={data?.team.members ?? []}
+                    canEdit={userRole === MemberRole.Owner}
+                  />
+                )}
+              </>
             )}
           </div>
 

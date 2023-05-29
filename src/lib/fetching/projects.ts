@@ -8,7 +8,7 @@ import { getSession } from '@/lib/supabase-server'
 
 export const getProjects = async () => {
   try {
-    const { supabase, user, error: sessionError } = await getSession()
+    const { supabase, session, error: sessionError } = await getSession()
 
     if (sessionError) {
       throw new RequestError({
@@ -23,7 +23,7 @@ export const getProjects = async () => {
     const { data: ownProjects } = await supabase
       .from('projects')
       .select('id')
-      .match({ owner: user.id })
+      .match({ owner: session.user.id })
       .order('created_at', { ascending: true })
 
     const userProjects = ownProjects ?? []
@@ -35,7 +35,7 @@ export const getProjects = async () => {
     const { data: projectsData } = await supabase
       .from('documents_members')
       .select('project_id')
-      .eq('user_id', user.id)
+      .eq('user_id', session.user.id)
       .not('project_id', 'in', plainTextOwnProjectsIds)
       .order('project_id', { ascending: true })
 
@@ -135,7 +135,7 @@ export const getProjects = async () => {
 
 export const validateProject = async (id: string) => {
   try {
-    const { supabase, user, error: sessionError } = await getSession()
+    const { supabase, session, error: sessionError } = await getSession()
     if (sessionError) {
       throw new RequestError({
         message:
@@ -152,7 +152,7 @@ export const validateProject = async (id: string) => {
     const userIsAMemberPromise = await supabase
       .from('documents_members')
       .select('id')
-      .match({ project_id: id, user_id: user.id })
+      .match({ project_id: id, user_id: session.user.id })
 
     const [project, userIsAMember] = await Promise.all([
       projectPromise,

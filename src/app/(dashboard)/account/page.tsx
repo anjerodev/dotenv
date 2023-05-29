@@ -1,11 +1,11 @@
-import { getSession } from '@/lib/supabase-server'
+import { getAuthUser } from '@/lib/supabase-server'
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
 import { AvatarInput } from '@/components/forms/avatar-input'
 import { UserForm } from '@/components/forms/user-form'
 import { Icons } from '@/components/icons'
 
 export default async function AccountPage() {
-  const { user } = await getSession()
+  const user = await getAuthUser()
 
   return (
     <>

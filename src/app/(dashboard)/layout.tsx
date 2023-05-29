@@ -1,4 +1,4 @@
-import { getSession } from '@/lib/supabase-server'
+import { getAuthUser } from '@/lib/supabase-server'
 import Navbar from '@/components/navigation/navbar'
 import UserMenu from '@/components/navigation/user-menu'
 
@@ -9,7 +9,7 @@ interface DashboardLayoutProps {
 export default async function DashboardLayout({
   children,
 }: DashboardLayoutProps) {
-  const { user } = await getSession()
+  const user = await getAuthUser()
 
   return (
     <div className="relative">

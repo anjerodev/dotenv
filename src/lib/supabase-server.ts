@@ -1,7 +1,6 @@
 import { cookies, headers } from 'next/headers'
-// import 'server-only'
-import { redirect } from 'next/navigation'
-import { routes } from '@/constants/routes'
+
+import 'server-only'
 import {
   Session,
   createServerComponentSupabaseClient,
@@ -39,7 +38,6 @@ type SupabaseError = {
 type SupabaseClientInfo = {
   supabase: ReturnType<typeof createServerComponentSupabaseClient<Database>>
   session: Session
-  user: Profile
   error: SupabaseError | null
 }
 
@@ -55,32 +53,7 @@ export const getSession = async (): Promise<SupabaseClientInfo> => {
       throw new RequestError({ message: 'Unauthorized', status: 401 })
     }
 
-    const getUser = async (): Promise<Profile> => {
-      const authUser = session.user
-      const email = authUser.email
-
-      const { data: user, error } = await supabase
-        .from('profiles')
-        .select('*')
-        .eq('id', authUser.id)
-        .single()
-
-      const avatar = user?.avatar_url
-        ? supabase.storage.from('avatars').getPublicUrl(user?.avatar_url).data
-            .publicUrl
-        : null
-
-      if (error || !user) {
-        console.log(error)
-        throw new RequestError({ message: 'No user found', status: 404 })
-      } else {
-        return { email, avatar, ...user }
-      }
-    }
-
-    const user = await getUser()
-
-    return { supabase, session, user, error: null }
+    return { supabase, session, error: null }
   } catch (error: any) {
     const errorResponse = {
       message: error.message,
@@ -90,8 +63,36 @@ export const getSession = async (): Promise<SupabaseClientInfo> => {
     return {
       supabase,
       session: undefined as any,
-      user: undefined as any,
       error: errorResponse,
     }
+  }
+}
+
+export const getAuthUser = async (): Promise<Profile> => {
+  const { session } = await getSession()
+
+  if (!session) {
+    throw new RequestError({ message: 'Unauthorized', status: 401 })
+  }
+
+  const authUser = session.user
+  const email = authUser.email
+
+  const { data: user, error } = await supabase
+    .from('profiles')
+    .select('*')
+    .eq('id', authUser.id)
+    .single()
+
+  const avatar = user?.avatar_url
+    ? supabase.storage.from('avatars').getPublicUrl(user?.avatar_url).data
+        .publicUrl
+    : null
+
+  if (error || !user) {
+    console.log(error)
+    throw new RequestError({ message: 'No user found', status: 404 })
+  } else {
+    return { email, avatar, ...user }
   }
 }

@@ -1,7 +1,5 @@
 'use client'
 
-import { useRouter } from 'next/navigation'
-import { routes } from '@/constants/routes'
 import { useForm } from '@mantine/form'
 import { DialogProps } from '@radix-ui/react-dialog'
 
@@ -17,6 +15,7 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog'
 import { Input } from '@/components/ui/input'
+import { toast } from '@/components/providers/toast-provider'
 
 interface DialogPropsType extends DialogProps {
   project: ProjectType
@@ -28,7 +27,6 @@ export default function RemoveProjectDialog({
   project,
   ...other
 }: DialogPropsType) {
-  const router = useRouter()
   const { remove, isRemoving } = useProject(project.id)
 
   const form = useForm({
@@ -47,10 +45,11 @@ export default function RemoveProjectDialog({
     if (name !== project.name) return
     try {
       await remove()
-      router.refresh()
-      router.push(routes.PROJECTS)
     } catch (error) {
-      // TODO: handle error
+      toast.error('Error deleting', {
+        description:
+          'Uh-oh! Error occurred while deleting project. Try again, please.',
+      })
     }
   }
 

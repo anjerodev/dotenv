@@ -8,6 +8,7 @@ import dayjs from 'dayjs'
 import { Document, ProjectType } from '@/types/collections'
 import { cn } from '@/lib/cn'
 import { useDocuments } from '@/hooks/useDocuments'
+import useKey from '@/hooks/useKey'
 import { useProject } from '@/hooks/useProject'
 import useSetParams from '@/hooks/useSetParams'
 import { ActionIcon } from '@/components/ui/action-icon'
@@ -52,7 +53,6 @@ export function DocumentsContainer({ projectId }: DocumentsContainerProps) {
   const {
     data: project,
     isLoading: isProjectLoading,
-    mutate: mutateProject,
     update,
     isPending,
   } = useProject(projectId)
@@ -92,15 +92,13 @@ export function DocumentsContainer({ projectId }: DocumentsContainerProps) {
   const handleSaveChanges = async () => {
     try {
       await update(state.updates)
-      mutateDocuments()
-      mutateProject()
+      await mutateDocuments()
       changeEditing()
       toast.success('Success!', {
         description:
           "Woohoo! The project update was a success. You've got some serious updating skills!",
       })
     } catch (error) {
-      console.log({ error })
       toast.error('Error updating', {
         description:
           "Murphy's Law strikes again! We encountered an error while updating the project. But fear not, we won't let this little setback stop us. Let's give it another go!",
@@ -114,6 +112,16 @@ export function DocumentsContainer({ projectId }: DocumentsContainerProps) {
       updates: { ...state.updates, name: project?.name ?? '', removedDocs: [] },
     })
   }
+  const handleScapeKey = () => {
+    if (state.editing) handleDiscardChanges()
+  }
+  const handleEnterKey = () => {
+    if (state.editing) handleSaveChanges()
+  }
+  useKey([
+    ['Escape', handleScapeKey],
+    ['Enter', handleEnterKey],
+  ])
 
   const handleRemoveProjectDialog = (value: boolean) => {
     setState({ removeProjectDialogIsOpen: value })
@@ -161,6 +169,7 @@ export function DocumentsContainer({ projectId }: DocumentsContainerProps) {
           if (state.editing)
             return (
               <Input
+                autoFocus
                 disabled={isPending}
                 placeholder="Please, fill it up"
                 value={state.updates.name}

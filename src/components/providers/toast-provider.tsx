@@ -119,7 +119,7 @@ const BaseToast = ({
 const calcDuration = (message: string | undefined) => {
   if (!message) return 5000
 
-  const wordsPerMinute = 165
+  const wordsPerMinute = 180
   const words = message.split(' ')
   const numWords = words.length
   const readingTime = numWords / wordsPerMinute

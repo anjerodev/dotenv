@@ -5,6 +5,10 @@ import useSWRMutation from 'swr/mutation'
 import { Document, DocumentType, Project } from '@/types/collections'
 import { fetcher } from '@/lib/fetcher'
 
+interface ProjectCard extends Omit<Project, 'documents'> {
+  documents: { id: string; name: string }[]
+}
+
 const fetchDocuments = (url: string) => fetcher<Document[]>(url)
 
 const createDocument = (
@@ -17,7 +21,7 @@ const createDocument = (
 export function useDocuments(projectId: string) {
   const { mutate: mutateCache } = useSWRConfig()
   const { data, isLoading, error, isValidating, mutate } = useSWR(
-    routes.API_DOCUMENTS(projectId),
+    projectId ? routes.API_DOCUMENTS(projectId) : null,
     fetchDocuments
   )
 
@@ -30,40 +34,30 @@ export function useDocuments(projectId: string) {
     return trigger(
       { projectId, values },
       {
-        populateCache: (newDocument: DocumentType, documents) => {
-          const updatedDocuments = [...documents]
-          updatedDocuments.push(newDocument)
-
+        populateCache: (newDocument: DocumentType) => {
           /**
-           * Update the cache on projects page to show the new project document
+           * Using the result return from the populateCache option
+           * to update the cache on Projects page, and list the
+           * new document.
            */
           mutateCache(routes.API_PROJECTS, undefined, {
-            populateCache: (_, projects) => {
+            populateCache: (_, projects: ProjectCard[]) => {
               if (!projects) return
-              const updatedProjects = [...projects]
-              const index = projects.findIndex(
-                (p: Project) => p.id === projectId
-              )
-              if (index !== -1) {
-                const documentObject = {
-                  id: newDocument.id,
-                  name: newDocument.name,
+              return projects.map((project) => {
+                if (project.id === projectId) {
+                  const { documents = [] } = project
+                  const documentObject = {
+                    id: newDocument.id,
+                    name: newDocument.name,
+                  }
+                  const updatedDocuments = [...documents, documentObject]
+                  return { ...project, documents: updatedDocuments }
                 }
-                const prevDocuments = projects[index].documents ?? []
-                prevDocuments.push(documentObject)
-                updatedProjects.splice(index, 1, {
-                  ...projects[index],
-                  documents: prevDocuments,
-                })
-              }
-
-              return updatedProjects
+                return project
+              })
             },
           })
-
-          return updatedDocuments
         },
-        revalidate: true,
       }
     )
   }
