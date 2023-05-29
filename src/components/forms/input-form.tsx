@@ -87,7 +87,7 @@ export function InputForm({
               if (error || formError)
                 return <Icons.close size={18} className="text-error" />
               if (form.isValid(id) && !form.isDirty(id))
-                return <Icons.doubleCheck size={18} className="text-succed" />
+                return <Icons.doubleCheck size={18} className="text-success" />
               return <Icons.check size={18} />
             })()}
           </ActionIcon>

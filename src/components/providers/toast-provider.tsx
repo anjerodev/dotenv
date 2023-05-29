@@ -74,7 +74,7 @@ const BaseToast = ({
   type = 'info',
 }: BaseToastType) => {
   const color = {
-    success: 'bg-succed',
+    success: 'bg-success',
     error: 'bg-error',
     info: 'bg-blue-600 dark:bg-blue-500',
     warning: 'bg-warning',

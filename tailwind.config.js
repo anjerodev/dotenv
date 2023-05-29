@@ -47,9 +47,9 @@ module.exports = {
           DEFAULT: 'hsl(var(--destructive))',
           foreground: 'hsl(var(--destructive-foreground))',
         },
-        succed: {
-          DEFAULT: 'hsl(var(--succed))',
-          foreground: 'hsl(var(--succed-foreground))',
+        success: {
+          DEFAULT: 'hsl(var(--success))',
+          foreground: 'hsl(var(--success-foreground))',
         },
         error: {
           DEFAULT: 'hsl(var(--error))',
