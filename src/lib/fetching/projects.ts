@@ -64,9 +64,7 @@ export const getProjects = async () => {
 
       const membersPromise = supabase
         .from('documents_members')
-        .select('role, profile:profiles(id, username, avatar_url)', {
-          count: 'exact',
-        })
+        .select('role, profile:profiles(id, username, avatar_url)')
         .eq('project_id', projectId)
         .order('added_at', { ascending: true })
 
@@ -84,7 +82,6 @@ export const getProjects = async () => {
           : null
 
       const uniqueMembers: Member[] = []
-      const membersCount = members?.count ?? 0
       let membersArray: Member[] = owner ? [owner] : []
 
       members.data?.forEach((member) => {
@@ -122,7 +119,7 @@ export const getProjects = async () => {
         documents: documents.data ?? [],
         team: {
           members: uniqueMembers,
-          count: membersCount ?? 0,
+          count: uniqueMembers.length ?? 0,
         },
       })
     }

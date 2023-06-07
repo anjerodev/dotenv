@@ -1,7 +1,7 @@
 'use client'
 
 import React, { useEffect, useState } from 'react'
-import { useRouter, useSearchParams } from 'next/navigation'
+import { useSearchParams } from 'next/navigation'
 import { useForm } from '@mantine/form'
 import dayjs from 'dayjs'
 import timezone from 'dayjs/plugin/timezone'
@@ -226,6 +226,8 @@ export default function DocumentDialog({
                   <TeamAvatars loading />
                 ) : (
                   <TeamDialog
+                    project={project}
+                    documentId={documentId}
                     title={form.values.name}
                     team={data?.team.members ?? []}
                     canEdit={userRole === MemberRole.Owner}

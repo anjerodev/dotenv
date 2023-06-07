@@ -3,7 +3,6 @@
 import { useForm, zodResolver } from '@mantine/form'
 import { ZodSchema } from 'zod'
 
-import { MutationReturnType } from '@/types/actions'
 import { useServerMutation } from '@/hooks/useServerMutation'
 import { ActionIcon } from '@/components/ui/action-icon'
 import { Input } from '@/components/ui/input'
@@ -15,7 +14,7 @@ interface InputFormProps {
   validationSquema?: ZodSchema<{ [x: string]: any }>
   icon: Icon
   placeholder?: string
-  onSubmit?: (values: { [x: string]: any }) => Promise<MutationReturnType>
+  onSubmit?: (values: { [x: string]: any }) => Promise<any>
   onSucced?: () => void
   onError?: (error: string) => void
 }
@@ -44,7 +43,13 @@ export function InputForm({
 
     mutate({
       mutation: onSubmit(values),
-      onError: (error) => onError && onError(error.message),
+      onError: (error) => {
+        if (error.form) {
+          form.setErrors(error.form)
+        } else {
+          onError && onError(error.message)
+        }
+      },
       onSuccess: () => {
         form.resetDirty(values)
         onSucced && onSucced()
@@ -73,7 +78,7 @@ export function InputForm({
         disabled={isPending}
         onKeyDown={(event) => handleKeyDown(event.key)}
         leftSection={
-          <div className="pl-1 text-muted-foreground">
+          <div className="pl-1">
             <IconComponent />
           </div>
         }
@@ -93,6 +98,7 @@ export function InputForm({
           </ActionIcon>
         }
         {...form.getInputProps(id)}
+        error={form.errors[id] || error?.form?.[id]}
       />
     </form>
   )

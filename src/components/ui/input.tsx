@@ -14,22 +14,39 @@ export interface InputProps
 
 const Input = React.forwardRef<HTMLInputElement, InputProps>(
   (
-    { wraperStyle, className, leftSection, rightSection, error, ...props },
+    {
+      wraperStyle,
+      className,
+      leftSection,
+      rightSection,
+      error,
+      onFocus,
+      onBlur,
+      ...props
+    },
     ref
   ) => {
     const [focused, setFocused] = React.useState(false)
+
     return (
       <div>
         <div
           className={cn(
-            'relative flex h-11 w-full items-center rounded-lg border bg-foreground/5 p-1 text-foreground outline-none ring-ring ring-offset-background transition-all',
-            focused ? 'ring-2  ring-offset-2 ' : 'ring-0',
-            error ? 'border-error' : 'border-foreground/10',
+            'relative flex h-11 w-full items-center rounded-lg border border-foreground/10 bg-foreground/5 p-1 text-foreground outline-none ring-0 ring-ring ring-offset-background transition-all',
+            focused && 'ring-2  ring-offset-2',
+            error && 'border-error text-error',
             focused && error && 'ring-error/70',
             wraperStyle
           )}
         >
-          {leftSection}
+          <span
+            className={cn(
+              'relative flex text-muted-foreground',
+              error && 'text-error'
+            )}
+          >
+            {leftSection}
+          </span>
           <input
             className={cn(
               'h-full w-full grow rounded-lg border-0 bg-transparent px-3 py-2 outline-none ring-0 transition-all placeholder:text-muted-foreground disabled:cursor-not-allowed disabled:opacity-50',
@@ -37,8 +54,12 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
             )}
             ref={ref}
             {...props}
-            onFocus={() => setFocused(true)}
-            onBlur={() => setFocused(false)}
+            onFocus={(event) => {
+              setFocused(true)
+            }}
+            onBlur={(event) => {
+              setFocused(false)
+            }}
           />
           {rightSection}
         </div>

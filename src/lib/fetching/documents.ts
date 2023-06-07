@@ -1,11 +1,11 @@
 import 'server-only'
-import { Member, MemberRole } from '@/types/collections'
+import { DocumentType, Member, MemberRole } from '@/types/collections'
 import { RequestError } from '@/lib/request-error-handler'
 import { supabase as admin, getSession } from '@/lib/supabase-server'
 
 export const getProjectDocuments = async (id: string) => {
   try {
-    const { supabase, error: sessionError } = await getSession()
+    const { supabase, session, error: sessionError } = await getSession()
 
     if (sessionError) {
       throw new RequestError({
@@ -15,11 +15,11 @@ export const getProjectDocuments = async (id: string) => {
       })
     }
 
-    const { data: documents, error } = await supabase
-      .from('documents')
-      .select()
-      .eq('project_id', id)
-      .order('created_at', { ascending: true })
+    const { data: userProjectDocuments, error } = await supabase
+      .from('documents_members')
+      .select('documents(*)')
+      .match({ project_id: id, user_id: session.user.id })
+      .order('created_at', { foreignTable: 'documents', ascending: true })
 
     if (error) {
       console.log({ error })
@@ -27,6 +27,17 @@ export const getProjectDocuments = async (id: string) => {
     }
 
     const data = []
+    const documents = userProjectDocuments.reduce(
+      (prev: DocumentType[], current) => {
+        if (!current.documents) return prev
+
+        const documents = Array.isArray(current.documents)
+          ? current.documents
+          : [current.documents]
+        return prev.concat(documents)
+      },
+      []
+    )
 
     // Fetch the document data
     for (const document of documents) {
@@ -121,7 +132,7 @@ export const getDocument = async (id: string) => {
     // Get the document members
     const teamPromise = supabase
       .from('documents_members')
-      .select('role, profile:profiles(id, username, avatar_url)', {
+      .select('ref:id, role, profile:profiles(id, username, avatar_url)', {
         count: 'exact',
       })
       .eq('document_id', id)
@@ -153,8 +164,8 @@ export const getDocument = async (id: string) => {
     const members: Member[] = []
 
     if (team) {
-      for (const member of team.data) {
-        const { role, profile } = member
+      for (const documentMember of team.data) {
+        const { ref, role, profile } = documentMember
         if (profile && !Array.isArray(profile)) {
           const avatarUrl = profile.avatar_url
           const avatar = avatarUrl
@@ -163,7 +174,7 @@ export const getDocument = async (id: string) => {
             : null
           const userRole = role as MemberRole
 
-          members.push({ role: userRole, avatar, ...profile })
+          members.push({ ref, role: userRole, avatar, ...profile })
         }
       }
     }

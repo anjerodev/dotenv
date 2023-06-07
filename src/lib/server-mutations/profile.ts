@@ -5,27 +5,61 @@ import { routes } from '@/constants/routes'
 
 import { MutationReturnType } from '@/types/actions'
 import { ProfileInputType } from '@/types/collections'
-import { createServerClient } from '@/lib/supabase-server'
+import { getSession } from '@/lib/supabase-server'
 import { profileSchema } from '@/lib/validations/profile'
 
+import { RequestErrorType } from '../request-error-handler'
+
+interface PayloadData {
+  [key: string]: any
+}
+
 export async function updateProfile(
-  id: string,
   values: Omit<ProfileInputType, 'id' | 'avatar_url'>
 ): Promise<MutationReturnType> {
-  const supabase = createServerClient()
+  const { supabase, session } = await getSession()
   const payload = profileSchema.safeParse(values)
+
+  if (!session) return { error: { message: 'You must log in.' } }
 
   if (!payload.success) {
     return { error: { message: 'The form validation has not passed.' } }
   }
 
-  let { error } = await supabase.from('profiles').upsert({
-    id,
-    updated_at: new Date().toISOString(),
-    ...payload.data,
-  })
+  const dataToUpdate: PayloadData = Object.entries(payload.data).reduce(
+    (result: PayloadData, [key, value]: [string, any]) => {
+      if (value) {
+        result[key] = value
+      }
+      return result
+    },
+    {}
+  )
 
-  if (error) return { error: { message: error.message } }
+  let { error } = await supabase
+    .from('profiles')
+    .update({
+      updated_at: new Date().toISOString(),
+      ...dataToUpdate,
+    })
+    .eq('id', session.user.id)
+
+  if (error) {
+    console.log('Error updating user: ', { error })
+    let errorMessage: RequestErrorType = { message: error.message }
+    if (error.message.includes('profiles_username_key')) {
+      errorMessage = {
+        message: 'Error updating user',
+        form: {
+          username:
+            "Oops, it seems someone beat you to that username. Let's find an available one that suits you just as well.",
+        },
+      }
+    }
+    return {
+      error: errorMessage,
+    }
+  }
 
   revalidatePath(routes.ACCOUNT)
 

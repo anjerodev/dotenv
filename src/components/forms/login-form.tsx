@@ -78,7 +78,7 @@ export function LoginForm() {
           "Oops, looks like your login attempt went astray. Let's try again and get you in this time!",
       })
     } else {
-      setState({ loading: false, submited: true, error: null })
+      setState({ loading: false, error: null })
     }
   }
 

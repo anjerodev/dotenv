@@ -50,7 +50,6 @@ export function AvatarInput({ user }: AvatarInputProps) {
       const filePath = `${fileName}`
 
       const updates = {
-        id: user.id,
         avatar_url: filePath,
         updated_at: date.toISOString(),
       }
@@ -59,7 +58,10 @@ export function AvatarInput({ user }: AvatarInputProps) {
         .from('avatars')
         .upload(filePath, file, { upsert: true })
 
-      const profilePromise = supabase.from('profiles').upsert(updates)
+      const profilePromise = supabase
+        .from('profiles')
+        .update(updates)
+        .eq('id', user.id)
 
       const [storage, profile] = await Promise.all([
         storagePromise,
@@ -67,7 +69,7 @@ export function AvatarInput({ user }: AvatarInputProps) {
       ])
 
       if (storage.error || profile.error) {
-        console.log({ uploadError: storage.error, updateError: profile.error })
+        // console.log({ uploadError: storage.error, updateError: profile.error })
 
         throw new Error(
           "Oh no, we've hit a roadblock. Looks like something went wrong during the file upload. Let's try again and see if we can get it right this time!"

@@ -115,7 +115,7 @@ export const AvatarGroup = React.forwardRef<HTMLDivElement, AvatarGroupProps>(
     const { children, spacing, className, ...rest } = props
 
     return (
-      <div className={cn('flex pl-3', className)} ref={ref} {...rest}>
+      <div className={cn('flex', className)} ref={ref} {...rest}>
         {React.Children.map(children, (child) => {
           if (React.isValidElement<AvatarProps>(child)) {
             return React.cloneElement(child, { withinGroup: true, spacing })

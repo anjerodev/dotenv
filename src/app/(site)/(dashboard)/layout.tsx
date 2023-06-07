@@ -12,11 +12,11 @@ export default async function DashboardLayout({
   const user = await getAuthUser()
 
   return (
-    <div className="relative">
+    <div id="dashboard-layout" className="relative">
       <Navbar>
         <UserMenu user={user!} />
       </Navbar>
-      <main className="relative z-10 min-h-[100dvh] w-full pt-16">
+      <main className="relative z-10 flex min-h-[100dvh] w-full pt-16">
         {children}
       </main>
     </div>

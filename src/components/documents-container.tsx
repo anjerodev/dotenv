@@ -31,6 +31,7 @@ import {
 } from '@/components/ui/tooltip'
 import DocumentDialog from '@/components/document-dialog'
 import { Icons } from '@/components/icons'
+import { useAuth } from '@/components/providers/supabase-auth-provider'
 import { toast } from '@/components/providers/toast-provider'
 import RemoveProjectDialog from '@/components/remove-project-dialog'
 import TeamAvatars from '@/components/team-avatars'
@@ -61,6 +62,9 @@ export function DocumentsContainer({ projectId }: DocumentsContainerProps) {
     isLoading: areDocumentsLoading,
     mutate: mutateDocuments,
   } = useDocuments(projectId)
+  const { user } = useAuth()
+
+  const isOwner = user?.id === project?.owner
 
   const [state, setState] = useReducer(
     (prevState: State, newState: Partial<State>): State => ({
@@ -181,24 +185,26 @@ export function DocumentsContainer({ projectId }: DocumentsContainerProps) {
           )
         })()}
 
-        <div className="flex grow items-center justify-end">
-          {state.editing ? (
-            <EditingActions
-              saving={isPending}
-              onSave={handleSaveChanges}
-              onDiscard={handleDiscardChanges}
-            />
-          ) : (
-            <ProjectMenu
-              onEdit={changeEditing}
-              onRemove={() => handleRemoveProjectDialog(true)}
-              disabled={isProjectLoading || areDocumentsLoading || !project}
-            />
-          )}
-        </div>
+        {isOwner && (
+          <div className="flex grow items-center justify-end">
+            {state.editing ? (
+              <EditingActions
+                saving={isPending}
+                onSave={handleSaveChanges}
+                onDiscard={handleDiscardChanges}
+              />
+            ) : (
+              <ProjectMenu
+                onEdit={changeEditing}
+                onRemove={() => handleRemoveProjectDialog(true)}
+                disabled={isProjectLoading || areDocumentsLoading || !project}
+              />
+            )}
+          </div>
+        )}
       </div>
       <Documents
-        disabled={state.editing || areDocumentsLoading}
+        disabled={state.editing || areDocumentsLoading || !isOwner}
         project={project}
         open={open}
         setOpen={setOpen}
@@ -308,6 +314,7 @@ export const Documents = ({
             Add document
           </div>
         </Card>
+
         {children}
       </CardsContainer>
       {project && (

@@ -1,7 +1,6 @@
 'use client'
 
 import { Profile } from '@/types/collections'
-import { updateProfile } from '@/lib/server-mutations/profile'
 import {
   profileUserNameSchema,
   profileWebsiteSchema,
@@ -13,13 +12,10 @@ import { InputForm } from './input-form'
 
 interface UserInfoProps {
   user: Profile
+  onSubmit: (values: { [x: string]: any }) => Promise<any>
 }
 
-export function UserForm({ user }: UserInfoProps) {
-  const handleSubmit = (values: { [x: string]: any }) => {
-    return updateProfile(user.id, values)
-  }
-
+export function UserForm({ user, onSubmit }: UserInfoProps) {
   return (
     <>
       <InputForm
@@ -28,7 +24,7 @@ export function UserForm({ user }: UserInfoProps) {
         placeholder="Username"
         validationSquema={profileUserNameSchema}
         initialValue={user.username}
-        onSubmit={handleSubmit}
+        onSubmit={onSubmit}
         onSucced={() =>
           toast.success('Great!', {
             description:
@@ -43,7 +39,7 @@ export function UserForm({ user }: UserInfoProps) {
         placeholder="Website"
         validationSquema={profileWebsiteSchema}
         initialValue={user.website}
-        onSubmit={handleSubmit}
+        onSubmit={onSubmit}
         onSucced={() =>
           toast.success('Success!', {
             description:

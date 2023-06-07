@@ -6,7 +6,14 @@ export enum MemberRole {
   Viewer = 'viewer',
 }
 
+export enum membersActions {
+  CREATE = 'create',
+  UPDATE = 'update',
+  REMOVE = 'remove',
+}
+
 export interface Member {
+  ref?: string
   id: string
   username: string | null
   avatar_url: string | null
@@ -17,7 +24,6 @@ export interface Member {
 
 export type Profile = Database['public']['Tables']['profiles']['Row'] & {
   avatar: string | undefined | null
-  email: string | undefined | null
 }
 
 export type ProfileInputType =

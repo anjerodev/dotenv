@@ -106,6 +106,7 @@ export interface Database {
       profiles: {
         Row: {
           avatar_url: string | null
+          email: string
           id: string
           updated_at: string | null
           username: string | null
@@ -113,6 +114,7 @@ export interface Database {
         }
         Insert: {
           avatar_url?: string | null
+          email: string
           id: string
           updated_at?: string | null
           username?: string | null
@@ -120,6 +122,7 @@ export interface Database {
         }
         Update: {
           avatar_url?: string | null
+          email?: string
           id?: string
           updated_at?: string | null
           username?: string | null
@@ -191,6 +194,19 @@ export interface Database {
           object: string
         }
         Returns: Record<string, unknown>
+      }
+      update_bulk_roles: {
+        Args: {
+          payload: Json
+        }
+        Returns: {
+          added_at: string | null
+          document_id: string
+          id: string
+          project_id: string
+          role: string
+          user_id: string
+        }[]
       }
     }
     Enums: {

@@ -68,11 +68,12 @@ export const getSession = async (): Promise<SupabaseClientInfo> => {
   }
 }
 
-export const getAuthUser = async (): Promise<Profile> => {
+export const getAuthUser = async (): Promise<Profile | null> => {
   const { session } = await getSession()
 
   if (!session) {
-    throw new RequestError({ message: 'Unauthorized', status: 401 })
+    // throw new RequestError({ message: 'Unauthorized', status: 401 })
+    return null
   }
 
   const authUser = session.user
@@ -91,7 +92,8 @@ export const getAuthUser = async (): Promise<Profile> => {
 
   if (error || !user) {
     console.log(error)
-    throw new RequestError({ message: 'No user found', status: 404 })
+    // throw new RequestError({ message: 'No user found', status: 404 })
+    return null
   } else {
     return { email, avatar, ...user }
   }
