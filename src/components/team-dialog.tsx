@@ -159,7 +159,7 @@ export default function TeamDialog({
         className="w-full sm:max-w-2xl"
       >
         <DialogHeader>
-          <DialogTitle>{'.env' + title}</DialogTitle>
+          <DialogTitle>{'.env' + (title ? `.${title}` : '')}</DialogTitle>
         </DialogHeader>
         <div className="mb-4 mt-2 flex items-center gap-3">
           <SearchableSelect

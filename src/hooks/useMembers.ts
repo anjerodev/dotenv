@@ -3,7 +3,7 @@ import { routes } from '@/constants/routes'
 import { useSWRConfig } from 'swr'
 import useSWRMutation from 'swr/mutation'
 
-import { Member } from '@/types/collections'
+import { Document, Member, MemberRole, Project } from '@/types/collections'
 import { fetcher } from '@/lib/fetcher'
 
 const fetchMembers = (url: string, data: { [x: string]: any }) =>
@@ -50,19 +50,76 @@ export function useMembers() {
     members: Partial<Member>[]
   }) => {
     return updateMutation({ projectId, documentId, members })
-      .then(() => {
-        // Update cache in document, project and projects page
-        // TODO: Update cache programatically for a better user experience.
-        mutateCache(routes.API_DOCUMENT(documentId), undefined, {
-          revalidate: true,
-        })
-        mutateCache(routes.API_PROJECT(projectId), undefined, {
-          revalidate: true,
-        })
-        mutateCache(routes.API_PROJECTS, undefined, {
-          revalidate: true,
-        })
-      })
+      .then(
+        (result: {
+          insert: Member[]
+          update: { ref: string; role: MemberRole }[]
+          remove: string[]
+        }) => {
+          /**
+           * Mutation to update the document cache
+           */
+          mutateCache(routes.API_DOCUMENT(documentId), undefined, {
+            populateCache(_, currentData) {
+              const { members: currentMembers, count } = currentData.team
+              const newCount =
+                count + result.insert.length - result.remove.length
+
+              const newMembers = [...currentMembers]
+              result.update.forEach(({ ref, role }) => {
+                const index = newMembers.findIndex((m) => m.ref === ref)
+                if (index !== -1) {
+                  newMembers.splice(index, 1, { ...newMembers[index], role })
+                }
+              })
+              result.remove.forEach((ref) => {
+                const index = newMembers.findIndex((m) => m.ref === ref)
+                if (index !== -1) {
+                  newMembers.splice(index, 1)
+                }
+              })
+              result.insert.forEach((newMember) => {
+                if (newMembers.length < 3) {
+                  newMembers.push(newMember)
+                }
+              })
+
+              const newTeam = { members: newMembers, count: newCount }
+
+              if (result.insert.length || result.remove.length) {
+                /**
+                 * Mutation to update the project documents cache
+                 */
+                mutateCache(routes.API_DOCUMENTS(projectId), undefined, {
+                  populateCache(_, currentData: Document[]) {
+                    const newData = currentData.map((doc) => {
+                      if (doc.id === documentId) {
+                        return { ...doc, team: newTeam }
+                      }
+                      return doc
+                    })
+                    return newData
+                  },
+                  revalidate: false,
+                })
+
+                /**
+                 * Mutation to update the projects page
+                 */
+                mutateCache(routes.API_PROJECTS, undefined, {
+                  revalidate: true,
+                })
+              }
+
+              return {
+                ...currentData,
+                team: newTeam,
+              }
+            },
+            revalidate: false,
+          })
+        }
+      )
       .catch((error) => {
         throw error
       })
