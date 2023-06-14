@@ -10,8 +10,10 @@ export default function MarketingMenu() {
     <div className="flex items-center gap-4">
       <div className="relative overflow-hidden rounded-md">
         <ActionIcon
-          component={Link}
+          component="a"
           href={routes.TWITTER}
+          target="_blank"
+          disabled
           className="peer relative z-10 bg-transparent hover:bg-transparent dark:bg-transparent dark:hover:bg-transparent"
         >
           <Icons.twitter className="h-5 w-5" />
@@ -20,8 +22,9 @@ export default function MarketingMenu() {
       </div>
       <div className="relative overflow-hidden rounded-md">
         <ActionIcon
-          component={Link}
+          component="a"
           href={routes.GITHUB}
+          target="_blank"
           className="peer relative z-10 bg-transparent hover:bg-transparent dark:bg-transparent dark:hover:bg-transparent"
         >
           <Icons.github className="h-5 w-5" />

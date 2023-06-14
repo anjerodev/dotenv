@@ -1,7 +1,6 @@
 import * as React from 'react'
 
 import { DefaultProps } from '@/types/styles'
-import { cn } from '@/lib/cn'
 import { createPolymorphicComponent } from '@/lib/create-polymorphic-component'
 
 import { Polymorphic } from './polymorphic'
@@ -9,12 +8,11 @@ import { Polymorphic } from './polymorphic'
 export interface UnstyledButtonProps extends DefaultProps {
   variant?: string
   children?: React.ReactNode
-  component?: any
 }
 
 export const _UnstyledButton = React.forwardRef<
   HTMLDivElement,
-  UnstyledButtonProps
+  UnstyledButtonProps  & { component?: any }
 >((props, ref) => {
   const { className, component = 'button', variant, ...others } = props
 
@@ -22,7 +20,7 @@ export const _UnstyledButton = React.forwardRef<
     <Polymorphic
       component={component}
       ref={ref}
-      className={cn(className)}
+      className={className}
       type={component === 'button' ? 'button' : undefined}
       {...others}
     />
@@ -31,7 +29,6 @@ export const _UnstyledButton = React.forwardRef<
 
 _UnstyledButton.displayName = 'UnstyledButton'
 
-export const UnstyledButton = createPolymorphicComponent<
-  'button',
-  UnstyledButtonProps
->(_UnstyledButton)
+export const UnstyledButton = createPolymorphicComponent<'button', UnstyledButtonProps>(
+  _UnstyledButton
+);

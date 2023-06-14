@@ -1,5 +1,5 @@
 import * as React from 'react'
-import { VariantProps, cva } from 'class-variance-authority'
+import { cva, VariantProps } from 'class-variance-authority'
 
 import { DefaultProps } from '@/types/styles'
 import { cn } from '@/lib/cn'
@@ -32,38 +32,24 @@ export interface ActionIconProps
     React.ButtonHTMLAttributes<HTMLButtonElement>,
     VariantProps<typeof actionIconVariants> {
   loading?: boolean
-  component?: any
+  disabled?: boolean
 }
 
 const _ActionIcon = React.forwardRef<HTMLButtonElement, ActionIconProps>(
   (props, ref) => {
-    const {
-      component = 'button',
-      children,
-      className,
-      variant,
-      disabled,
-      size,
-      loading,
-      ...other
-    } = props
+    const { children, className, variant, disabled, size, loading, ...other } =
+      props
 
-    const isDisabled = disabled || loading
     const childrenArray = React.Children.toArray(children)
     const firstChild = childrenArray[0]
 
     return (
       <UnstyledButton
-        component={component}
-        className={cn(
-          actionIconVariants({ variant, size, className }),
-          component !== 'button' &&
-            isDisabled &&
-            'pointer-events-none opacity-50'
-        )}
+        className={cn(actionIconVariants({ variant, size, className }))}
         ref={ref}
-        type={component === 'button' ? 'button' : undefined}
-        disabled={isDisabled}
+        disabled={loading || disabled}
+        data-disabled={disabled || undefined}
+        data-loading={loading || undefined}
         {...other}
       >
         {loading ? (
@@ -77,8 +63,6 @@ const _ActionIcon = React.forwardRef<HTMLButtonElement, ActionIconProps>(
 )
 _ActionIcon.displayName = 'ActionIcon'
 
-const ActionIcon = createPolymorphicComponent<'button', ActionIconProps>(
+export const ActionIcon = createPolymorphicComponent<'button', ActionIconProps>(
   _ActionIcon
 )
-
-export { ActionIcon, actionIconVariants }
