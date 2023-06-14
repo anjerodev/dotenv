@@ -1,4 +1,4 @@
-import { RequestError } from './request-error-handler'
+import { RequestError } from './errors'
 
 export const fetcher = async <T = any>(
   url: string,

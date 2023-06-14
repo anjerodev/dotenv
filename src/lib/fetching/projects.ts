@@ -3,7 +3,7 @@ import { routes } from '@/constants/routes'
 
 import 'server-only'
 import { Member, MemberRole } from '@/types/collections'
-import { RequestError } from '@/lib/request-error-handler'
+import { RequestError } from '@/lib/errors'
 import { getSession } from '@/lib/supabase-server'
 
 export const getProjects = async () => {

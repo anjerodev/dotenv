@@ -8,7 +8,7 @@ import { ProfileInputType } from '@/types/collections'
 import { getSession } from '@/lib/supabase-server'
 import { profileSchema } from '@/lib/validations/profile'
 
-import { RequestErrorType } from '../request-error-handler'
+import { RequestErrorType } from '../errors'
 
 interface PayloadData {
   [key: string]: any

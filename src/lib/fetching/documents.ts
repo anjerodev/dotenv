@@ -1,6 +1,6 @@
 import 'server-only'
 import { DocumentType, Member, MemberRole } from '@/types/collections'
-import { RequestError } from '@/lib/request-error-handler'
+import { RequestError } from '@/lib/errors'
 import { supabase as admin, getSession } from '@/lib/supabase-server'
 
 export const getProjectDocuments = async (id: string) => {

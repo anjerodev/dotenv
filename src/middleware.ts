@@ -6,7 +6,7 @@ import type { Database } from '@/types/supabase'
 
 export async function middleware(req: NextRequest) {
   const res = NextResponse.next()
-  const isAuthPage = req.nextUrl.pathname.startsWith('/login')
+  const isAuthPage = req.nextUrl.pathname.startsWith(routes.LOGIN)
 
   const supabase = createMiddlewareSupabaseClient<Database>({
     req,

@@ -1,5 +1,5 @@
 import 'server-only'
-import { RequestError } from '@/lib/request-error-handler'
+import { RequestError } from '@/lib/errors'
 import { getSession } from '@/lib/supabase-server'
 import { editProjectSchema, projectSchema } from '@/lib/validations/project'
 

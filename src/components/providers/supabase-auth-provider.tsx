@@ -40,9 +40,6 @@ export const SupabaseAuthProvider = ({
 
   // Get USER
   const getUser = async (): Promise<Profile | null> => {
-    const authUser = await supabase.auth.getUser()
-    const email = authUser.data.user?.email
-
     const { data: user, error } = await supabase
       .from('profiles')
       .select('*')
@@ -58,7 +55,7 @@ export const SupabaseAuthProvider = ({
       console.log(error)
       return null
     } else {
-      return { email, avatar, ...user }
+      return { avatar, ...user }
     }
   }
 

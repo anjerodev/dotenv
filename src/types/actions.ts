@@ -1,4 +1,4 @@
-import { RequestErrorType } from '@/lib/request-error-handler'
+import { RequestErrorType } from '@/lib/errors'
 
 export interface MutationError extends Omit<RequestErrorType, 'status'> {}
 

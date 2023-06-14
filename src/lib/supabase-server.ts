@@ -1,16 +1,16 @@
-import { cookies, headers } from 'next/headers'
+import { cookies } from 'next/headers'
 
 import 'server-only'
 import {
   Session,
-  createServerComponentSupabaseClient,
+  createServerComponentClient,
 } from '@supabase/auth-helpers-nextjs'
 import { createClient } from '@supabase/supabase-js'
 
 import { Profile } from '@/types/collections'
 import type { Database } from '@/types/supabase'
 
-import { RequestError } from './request-error-handler'
+import { RequestError } from './errors'
 
 /**
  * It is needed to create a supabase client with supabase-js and the service_role key
@@ -24,8 +24,7 @@ export const supabase = createClient<Database>(
 )
 
 export const createServerClient = () => {
-  return createServerComponentSupabaseClient<Database>({
-    headers,
+  return createServerComponentClient<Database>({
     cookies,
   })
 }
@@ -36,7 +35,7 @@ type SupabaseError = {
 }
 
 type SupabaseClientInfo = {
-  supabase: ReturnType<typeof createServerComponentSupabaseClient<Database>>
+  supabase: ReturnType<typeof createServerComponentClient<Database>>
   session: Session
   error: SupabaseError | null
 }
@@ -77,7 +76,6 @@ export const getAuthUser = async (): Promise<Profile | null> => {
   }
 
   const authUser = session.user
-  const email = authUser.email
 
   const { data: user, error } = await supabase
     .from('profiles')
@@ -95,6 +93,6 @@ export const getAuthUser = async (): Promise<Profile | null> => {
     // throw new RequestError({ message: 'No user found', status: 404 })
     return null
   } else {
-    return { email, avatar, ...user }
+    return { avatar, ...user }
   }
 }

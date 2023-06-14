@@ -1,5 +1,5 @@
 import { Member, MemberRole, membersActions } from '@/types/collections'
-import { RequestError } from '@/lib/request-error-handler'
+import { RequestError } from '@/lib/errors'
 import { getSession } from '@/lib/supabase-server'
 
 type memberType = {
