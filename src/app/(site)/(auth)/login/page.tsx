@@ -2,6 +2,7 @@ import { LoginForm } from '@/components/forms/login-form'
 import Logo from '@/components/logo'
 
 import '@/styles/animations.css'
+
 import Image from 'next/image'
 
 export default async function LoginPage() {

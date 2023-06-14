@@ -11,15 +11,20 @@ import { useAuth } from '@/components/providers/supabase-auth-provider'
 import { toast } from '@/components/providers/toast-provider'
 
 type State = {
-  loading: boolean
   submited: boolean
   error: any
+  provider: string | null
 }
 
 const initialState: State = {
-  loading: false,
   submited: false,
   error: null,
+  provider: null,
+}
+
+const providers = {
+  GITHUB: 'github',
+  MAGIC_LINK: 'magic',
 }
 
 export function LoginForm() {
@@ -30,7 +35,7 @@ export function LoginForm() {
     }),
     initialState
   )
-  const { signInWithOtp, signInWithGithub } = useAuth()
+  const { signInWithOtp, signInWithGithub, isAuthenticating } = useAuth()
 
   const form = useForm({
     initialValues: {
@@ -48,37 +53,35 @@ export function LoginForm() {
 
   const handleSubmit = async ({ email }: { email: string }) => {
     if (form.validate().hasErrors) return
-
-    setState({ loading: true })
+    setState({ provider: providers.MAGIC_LINK })
 
     const error = await signInWithOtp(email)
 
     if (error) {
       console.log({ error })
-      setState({ loading: false, error })
+      setState({ error })
       toast.error('Error', {
         description:
           "Oops, looks like your login attempt went astray. Let's try again and get you in this time!",
       })
     } else {
-      setState({ loading: false, submited: true, error: null })
+      setState({ submited: true, error: null })
     }
   }
 
   const hanldleGitHubLogin = async () => {
-    setState({ loading: true })
-
     const error = await signInWithGithub()
+    setState({ provider: providers.GITHUB })
 
     if (error) {
       console.log({ error })
-      setState({ loading: false, error })
+      setState({ error })
       toast.error('Error', {
         description:
           "Oops, looks like your login attempt went astray. Let's try again and get you in this time!",
       })
     } else {
-      setState({ loading: false, error: null })
+      setState({ error: null })
     }
   }
 
@@ -89,13 +92,13 @@ export function LoginForm() {
       {/* Email Input */}
       <form className="mt-12" onSubmit={form.onSubmit(handleSubmit)}>
         <EmailInput
-          disabled={state.submited}
+          disabled={isAuthenticating || state.submited}
           error={errors.email}
           onChange={(value) => form.setFieldValue('email', value)}
         />
         <Button
-          loading={state.loading}
-          disabled={state.submited}
+          loading={isAuthenticating && state.provider === providers.MAGIC_LINK}
+          disabled={isAuthenticating || state.submited}
           icon={<Icons.wand size={16} />}
           variant="default"
           type="submit"
@@ -122,7 +125,8 @@ export function LoginForm() {
 
       {/* Github Button */}
       <Button
-        disabled={state.loading || state.submited}
+        disabled={isAuthenticating || state.submited}
+        loading={isAuthenticating && state.provider === providers.GITHUB}
         onClick={hanldleGitHubLogin}
         icon={<Icons.github size={16} />}
         className="w-full bg-gray-900 text-gray-100 hover:bg-gray-950 dark:bg-gray-100 dark:text-gray-900 dark:hover:bg-gray-300"
