@@ -68,17 +68,17 @@ export const getProjects = async () => {
 
       if (!project.data) continue
 
-      const owner = project.data?.ownerProfile.length
-        ? { role: MemberRole.Owner, ...project.data.ownerProfile[0] }
+      const owner = project.data?.ownerProfile
+        ? { role: MemberRole.Owner, ...project.data.ownerProfile }
         : null
 
       const uniqueMembers: Member[] = []
       let membersArray: Member[] = owner ? [owner] : []
 
       members.data?.forEach((member) => {
-        if (!member.profile.length) return
+        if (!member.profile) return
         const role = member.role as MemberRole
-        membersArray.push({ role, ...member.profile[0] })
+        membersArray.push({ role, ...member.profile })
       })
 
       for (const member of membersArray) {
@@ -146,7 +146,9 @@ export const getProject = async (id: string) => {
     }
 
     // If current user is not a member of the project redirect to user projects
-    const isUserMember = userDocuments.data && userDocuments.data?.length > 0
+    const isUserMember =
+      session.user.id === project.data.owner ||
+      (userDocuments.data && userDocuments.data?.length > 0)
     if (!isUserMember) {
       redirect(routes.PROJECTS)
     }
