@@ -20,6 +20,7 @@ export const getMembers = async ({
       .or(`username.ilike.%${username}%,email.ilike.%${email}%`)
       .neq('id', session.user.id)
       .order('username')
+      .limit(3)
 
     if (error) {
       console.log({ error })
