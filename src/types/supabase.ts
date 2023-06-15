@@ -53,6 +53,14 @@ export interface Database {
           name?: string
           project_id?: string
         }
+        Relationships: [
+          {
+            foreignKeyName: "documents_project_id_fkey"
+            columns: ["project_id"]
+            referencedRelation: "projects"
+            referencedColumns: ["id"]
+          }
+        ]
       }
       documents_history: {
         Row: {
@@ -76,6 +84,20 @@ export interface Database {
           updated_at?: string | null
           updated_by?: string
         }
+        Relationships: [
+          {
+            foreignKeyName: "documents_history_document_id_fkey"
+            columns: ["document_id"]
+            referencedRelation: "documents"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "documents_history_updated_by_fkey"
+            columns: ["updated_by"]
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          }
+        ]
       }
       documents_members: {
         Row: {
@@ -102,6 +124,26 @@ export interface Database {
           role?: string
           user_id?: string
         }
+        Relationships: [
+          {
+            foreignKeyName: "documents_members_document_id_fkey"
+            columns: ["document_id"]
+            referencedRelation: "documents"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "documents_members_project_id_fkey"
+            columns: ["project_id"]
+            referencedRelation: "projects"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "documents_members_user_id_fkey"
+            columns: ["user_id"]
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          }
+        ]
       }
       profiles: {
         Row: {
@@ -128,6 +170,14 @@ export interface Database {
           username?: string | null
           website?: string | null
         }
+        Relationships: [
+          {
+            foreignKeyName: "profiles_id_fkey"
+            columns: ["id"]
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          }
+        ]
       }
       projects: {
         Row: {
@@ -151,6 +201,14 @@ export interface Database {
           owner?: string
           updated_at?: string | null
         }
+        Relationships: [
+          {
+            foreignKeyName: "projects_owner_fkey"
+            columns: ["owner"]
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          }
+        ]
       }
     }
     Views: {
@@ -179,6 +237,20 @@ export interface Database {
           updated_at?: string | null
           updated_by?: string | null
         }
+        Relationships: [
+          {
+            foreignKeyName: "documents_history_document_id_fkey"
+            columns: ["document_id"]
+            referencedRelation: "documents"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "documents_history_updated_by_fkey"
+            columns: ["updated_by"]
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          }
+        ]
       }
     }
     Functions: {
@@ -194,19 +266,6 @@ export interface Database {
           object: string
         }
         Returns: Record<string, unknown>
-      }
-      update_bulk_roles: {
-        Args: {
-          payload: Json
-        }
-        Returns: {
-          added_at: string | null
-          document_id: string
-          id: string
-          project_id: string
-          role: string
-          user_id: string
-        }[]
       }
     }
     Enums: {
@@ -252,6 +311,14 @@ export interface Database {
           public?: boolean | null
           updated_at?: string | null
         }
+        Relationships: [
+          {
+            foreignKeyName: "buckets_owner_fkey"
+            columns: ["owner"]
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          }
+        ]
       }
       migrations: {
         Row: {
@@ -272,6 +339,7 @@ export interface Database {
           id?: number
           name?: string
         }
+        Relationships: []
       }
       objects: {
         Row: {
@@ -310,6 +378,20 @@ export interface Database {
           updated_at?: string | null
           version?: string | null
         }
+        Relationships: [
+          {
+            foreignKeyName: "objects_bucketId_fkey"
+            columns: ["bucket_id"]
+            referencedRelation: "buckets"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "objects_owner_fkey"
+            columns: ["owner"]
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          }
+        ]
       }
     }
     Views: {

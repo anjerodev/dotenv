@@ -2,21 +2,13 @@ import { redirect } from 'next/navigation'
 import { routes } from '@/constants/routes'
 
 import 'server-only'
+
 import { Member, MemberRole } from '@/types/collections'
-import { RequestError } from '@/lib/errors'
 import { getSession } from '@/lib/supabase-server'
 
 export const getProjects = async () => {
   try {
-    const { supabase, session, error: sessionError } = await getSession()
-
-    if (sessionError) {
-      throw new RequestError({
-        message:
-          sessionError?.message ?? 'There is no connection with the database.',
-        status: sessionError?.status,
-      })
-    }
+    const { supabase, session } = await getSession()
 
     let projects = []
 
@@ -76,18 +68,17 @@ export const getProjects = async () => {
 
       if (!project.data) continue
 
-      const owner =
-        project.data?.ownerProfile && !Array.isArray(project.data.ownerProfile)
-          ? { role: MemberRole.Owner, ...project.data.ownerProfile }
-          : null
+      const owner = project.data?.ownerProfile.length
+        ? { role: MemberRole.Owner, ...project.data.ownerProfile[0] }
+        : null
 
       const uniqueMembers: Member[] = []
       let membersArray: Member[] = owner ? [owner] : []
 
       members.data?.forEach((member) => {
-        if (!member.profile || Array.isArray(member.profile)) return
+        if (!member.profile.length) return
         const role = member.role as MemberRole
-        membersArray.push({ role, ...member.profile })
+        membersArray.push({ role, ...member.profile[0] })
       })
 
       for (const member of membersArray) {
@@ -130,65 +121,37 @@ export const getProjects = async () => {
   }
 }
 
-export const validateProject = async (id: string) => {
-  try {
-    const { supabase, session, error: sessionError } = await getSession()
-    if (sessionError) {
-      throw new RequestError({
-        message:
-          sessionError?.message ?? 'There is no connection with the database.',
-        status: sessionError?.status,
-      })
-    }
-
-    const projectPromise = await supabase
-      .from('projects')
-      .select('id')
-      .eq('id', id)
-      .single()
-    const userIsAMemberPromise = await supabase
-      .from('documents_members')
-      .select('id')
-      .match({ project_id: id, user_id: session.user.id })
-
-    const [project, userIsAMember] = await Promise.all([
-      projectPromise,
-      userIsAMemberPromise,
-    ])
-
-    if (!project.data || !userIsAMember.data) return redirect(routes.PROJECTS)
-
-    return null
-  } catch (error) {
-    throw error
-  }
-}
-
 export const getProject = async (id: string) => {
   try {
-    const { supabase, error: sessionError } = await getSession()
-    if (sessionError) {
-      throw new RequestError({
-        message:
-          sessionError?.message ?? 'There is no connection with the database.',
-        status: sessionError?.status,
-      })
-    }
+    const { supabase, session } = await getSession()
 
-    const { data, error } = await supabase
+    const projectPromise = await supabase
       .from('projects')
       .select()
       .eq('id', id)
       .single()
+    const projectUserDocuments = await supabase
+      .from('documents_members')
+      .select('id')
+      .match({ project_id: id, user_id: session.user.id })
 
-    if (error) {
-      throw new RequestError({
-        message: 'Project not found',
-        status: 404,
-      })
+    const [project, userDocuments] = await Promise.all([
+      projectPromise,
+      projectUserDocuments,
+    ])
+
+    if (project.error) {
+      //   TODO: Handle when a project is not found
+      redirect(routes.PROJECTS)
     }
 
-    return data
+    // If current user is not a member of the project redirect to user projects
+    const isUserMember = userDocuments.data && userDocuments.data?.length > 0
+    if (!isUserMember) {
+      redirect(routes.PROJECTS)
+    }
+
+    return project.data
   } catch (error) {
     throw error
   }

@@ -19,14 +19,7 @@ export const updateProjectMembers = async ({
   members: memberType[]
 }) => {
   try {
-    const { supabase, session, error: sessionError } = await getSession()
-    if (sessionError) {
-      throw new RequestError({
-        message:
-          sessionError?.message ?? 'There is no connection with the database.',
-        status: sessionError?.status,
-      })
-    }
+    const { supabase } = await getSession()
 
     const newMembers = members.filter((m) => m.action === membersActions.CREATE)
     const updatedMembers = members.filter(
@@ -94,8 +87,8 @@ export const updateProjectMembers = async ({
     const updatedData = update?.data ?? []
 
     insertedData.forEach((member) => {
-      if (member.profile && !Array.isArray(member.profile)) {
-        const avatar = member.profile.avatar_url
+      if (member.profile) {
+        const avatar = member.profile?.avatar_url
           ? supabase.storage
               .from('avatars')
               .getPublicUrl(member.profile.avatar_url).data.publicUrl

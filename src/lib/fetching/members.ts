@@ -10,14 +10,7 @@ export const getMembers = async ({
   email: string
 }) => {
   try {
-    const { supabase, session, error: sessionError } = await getSession()
-    if (sessionError) {
-      throw new RequestError({
-        message:
-          sessionError?.message ?? 'There is no connection with the database.',
-        status: sessionError?.status,
-      })
-    }
+    const { supabase, session } = await getSession()
 
     const users: Partial<Profile>[] = []
 

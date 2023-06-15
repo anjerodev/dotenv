@@ -20,16 +20,7 @@ export async function updateDocument({
   id: string
   values: UpdateDocumentInput
 }): Promise<MutationReturnType> {
-  const { supabase, session, error: sessionError } = await getSession()
-
-  if (sessionError) {
-    return {
-      error: {
-        message:
-          sessionError?.message ?? 'There is no connection with the database.',
-      },
-    }
-  }
+  const { supabase, session } = await getSession()
 
   if (!projectId || !id || !values)
     return { error: { message: 'No values has been passed.' } }

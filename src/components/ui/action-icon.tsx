@@ -53,7 +53,7 @@ const _ActionIcon = React.forwardRef<HTMLButtonElement, ActionIconProps>(
         {...other}
       >
         {loading ? (
-          <Icons.spinner className="h-[18px] w-[18px] animate-spin" />
+          <Icons.spinner className="h-6 w-6 animate-spin" />
         ) : (
           firstChild
         )}

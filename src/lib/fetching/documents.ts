@@ -1,23 +1,16 @@
 import 'server-only'
+
 import { DocumentType, Member, MemberRole } from '@/types/collections'
 import { RequestError } from '@/lib/errors'
 import { supabase as admin, getSession } from '@/lib/supabase-server'
 
 export const getProjectDocuments = async (id: string) => {
   try {
-    const { supabase, session, error: sessionError } = await getSession()
-
-    if (sessionError) {
-      throw new RequestError({
-        message:
-          sessionError?.message ?? 'There is no connection with the database.',
-        status: sessionError?.status,
-      })
-    }
+    const { supabase, session } = await getSession()
 
     const { data: userProjectDocuments, error } = await supabase
       .from('documents_members')
-      .select('documents(*)')
+      .select('document:documents(*)')
       .match({ project_id: id, user_id: session.user.id })
       .order('created_at', { foreignTable: 'documents', ascending: true })
 
@@ -27,14 +20,11 @@ export const getProjectDocuments = async (id: string) => {
     }
 
     const data = []
+    console.log({ userProjectDocuments })
     const documents = userProjectDocuments.reduce(
       (prev: DocumentType[], current) => {
-        if (!current.documents) return prev
-
-        const documents = Array.isArray(current.documents)
-          ? current.documents
-          : [current.documents]
-        return prev.concat(documents)
+        if (!current.document) return prev
+        return prev.concat([current.document])
       },
       []
     )
@@ -77,7 +67,7 @@ export const getProjectDocuments = async (id: string) => {
       if (teamData) {
         for (const member of teamData.data) {
           const { role, profile } = member
-          if (profile && !Array.isArray(profile)) {
+          if (profile) {
             const avatarUrl = profile.avatar_url
             const avatar = avatarUrl
               ? supabase.storage.from('avatars').getPublicUrl(avatarUrl).data
@@ -108,15 +98,7 @@ export const getProjectDocuments = async (id: string) => {
 
 export const getDocument = async (id: string) => {
   try {
-    const { supabase, error: sessionError } = await getSession()
-
-    if (sessionError) {
-      throw new RequestError({
-        message:
-          sessionError?.message ?? 'There is no connection with the database.',
-        status: sessionError?.status,
-      })
-    }
+    const { supabase } = await getSession()
 
     // Get the last document update data
     const lastDocumentPromise = supabase
@@ -166,7 +148,7 @@ export const getDocument = async (id: string) => {
     if (team) {
       for (const documentMember of team.data) {
         const { ref, role, profile } = documentMember
-        if (profile && !Array.isArray(profile)) {
+        if (profile) {
           const avatarUrl = profile.avatar_url
           const avatar = avatarUrl
             ? supabase.storage.from('avatars').getPublicUrl(avatarUrl).data
@@ -179,17 +161,12 @@ export const getDocument = async (id: string) => {
       }
     }
 
-    const documentData = Array.isArray(lastDocument.data.document)
-      ? lastDocument.data.document[0]
-      : lastDocument.data.document
-    const updatedBy = Array.isArray(lastDocument.data.updated_by)
-      ? lastDocument.data.updated_by[0]
-      : lastDocument.data.updated_by
+    const documentData = lastDocument.data.document ?? {}
 
     const data = {
-      ...documentData!,
+      ...documentData,
       updated_at: lastDocument.data.updated_at!,
-      updated_by: updatedBy!,
+      updated_by: lastDocument.data.updated_by!,
       content: content?.decrypted_content ?? '',
       team: { members, count: team.count ?? 0 },
     }

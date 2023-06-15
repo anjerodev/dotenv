@@ -1,4 +1,4 @@
-import { validateProject } from '@/lib/fetching/projects'
+import { getProject } from '@/lib/fetching/projects'
 import { DocumentsContainer } from '@/components/documents-container'
 
 type PageParamsType = {
@@ -7,7 +7,7 @@ type PageParamsType = {
 }
 
 export default async function Page({ params: { id } }: PageParamsType) {
-  await validateProject(id)
+  await getProject(id)
 
   return (
     <div className="mx-auto w-full max-w-4xl px-8 py-12">

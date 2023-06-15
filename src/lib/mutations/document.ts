@@ -1,4 +1,5 @@
 import 'server-only'
+
 import { MemberRole } from '@/types/collections'
 import { RequestError } from '@/lib/errors'
 import { supabase as admin, getSession } from '@/lib/supabase-server'
@@ -10,15 +11,7 @@ export async function createDocument(
   try {
     if (!values) return { error: { message: 'No values has been passed.' } }
 
-    const { supabase, session, error: sessionError } = await getSession()
-
-    if (sessionError) {
-      throw new RequestError({
-        message:
-          sessionError?.message ?? 'There is no connection with the database.',
-        status: sessionError?.status,
-      })
-    }
+    const { supabase, session } = await getSession()
 
     // Check that there is not a document with the same name in the project
     const { data: prevDoc } = await supabase
@@ -82,10 +75,7 @@ export async function createDocument(
       })
     }
 
-    const profile =
-      member.data.profile && Array.isArray(member.data.profile)
-        ? member.data.profile[0]
-        : member.data.profile
+    const profile = member.data.profile
     const avatar = profile?.avatar_url
       ? supabase.storage.from('avatars').getPublicUrl(profile.avatar_url).data
           .publicUrl
@@ -103,15 +93,7 @@ export async function updateDocument(
   args: { projectId: string; values: { name: string; content: string } }
 ) {
   try {
-    const { supabase, session, error: sessionError } = await getSession()
-
-    if (sessionError) {
-      throw new RequestError({
-        message:
-          sessionError?.message ?? 'There is no connection with the database.',
-        status: sessionError?.status,
-      })
-    }
+    const { supabase, session } = await getSession()
 
     if (!documentId || !args)
       throw new RequestError({
@@ -167,18 +149,12 @@ export async function updateDocument(
       })
     }
 
-    const documentData = Array.isArray(history.document)
-      ? history.document[0]
-      : history.document
-
-    const updatedBy = Array.isArray(history.updated_by)
-      ? history.updated_by[0]
-      : history.updated_by
+    const documentData = history.document ?? {}
 
     const data = {
       ...documentData,
       updated_at: history.updated_at,
-      updated_by: updatedBy,
+      updated_by: history.updated_by,
       content: args.values.content,
     }
 
