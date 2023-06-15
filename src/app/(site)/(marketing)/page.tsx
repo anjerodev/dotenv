@@ -146,7 +146,7 @@ export default async function Home() {
                 better web together.
               </h1>
               <p className="text-lg text-foreground/50">
-                Self host your own copy if you want.
+                Self host your own copy if you want to.
               </p>
               <div className="mt-12">
                 <Link

@@ -97,7 +97,11 @@ export function LoginForm() {
           onChange={(value) => form.setFieldValue('email', value)}
         />
         <Button
-          loading={isAuthenticating && state.provider === providers.MAGIC_LINK}
+          loading={
+            isAuthenticating &&
+            state.provider === providers.MAGIC_LINK &&
+            !state.submited
+          }
           disabled={isAuthenticating || state.submited}
           icon={<Icons.wand size={16} />}
           variant="default"

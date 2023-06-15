@@ -3,15 +3,15 @@ import { RequestError } from './errors'
 export const fetcher = async <T = any>(
   url: string,
   method: 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE' | 'HEAD' = 'GET',
-  next?: any,
+  otherOptions?: any,
   data?: any
 ): Promise<T> => {
   const options: RequestInit = {
-    next,
     method,
     headers: {
       'Content-Type': 'application/json',
     },
+    ...otherOptions,
   }
 
   if (data) {
