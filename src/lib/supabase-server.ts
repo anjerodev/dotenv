@@ -1,10 +1,8 @@
 import { cookies } from 'next/headers'
 
 import 'server-only'
-import {
-  Session,
-  createServerComponentClient,
-} from '@supabase/auth-helpers-nextjs'
+
+import { createServerComponentClient } from '@supabase/auth-helpers-nextjs'
 import { createClient } from '@supabase/supabase-js'
 
 import { Profile } from '@/types/collections'
@@ -29,21 +27,9 @@ export const createServerClient = () => {
   })
 }
 
-type SupabaseError = {
-  message: string
-  status: number
-}
-
-type SupabaseClientInfo = {
-  supabase: ReturnType<typeof createServerComponentClient<Database>>
-  session: Session
-  error: SupabaseError | null
-}
-
-export const getSession = async (): Promise<SupabaseClientInfo> => {
-  const supabase = createServerClient()
-
+export const getSession = async () => {
   try {
+    const supabase = createServerClient()
     const {
       data: { session },
     } = await supabase.auth.getSession()
@@ -52,18 +38,9 @@ export const getSession = async (): Promise<SupabaseClientInfo> => {
       throw new RequestError({ message: 'Unauthorized', status: 401 })
     }
 
-    return { supabase, session, error: null }
-  } catch (error: any) {
-    const errorResponse = {
-      message: error.message,
-      status: error.status,
-    }
-
-    return {
-      supabase,
-      session: undefined as any,
-      error: errorResponse,
-    }
+    return { supabase, session }
+  } catch (error) {
+    throw error
   }
 }
 
