@@ -64,7 +64,7 @@ export function DocumentsContainer({ projectId }: DocumentsContainerProps) {
   } = useDocuments(projectId)
   const { user } = useAuth()
 
-  const isOwner = user?.id === project?.owner
+  const isOwner = project && user && user.id === project.owner
 
   const [state, setState] = useReducer(
     (prevState: State, newState: Partial<State>): State => ({

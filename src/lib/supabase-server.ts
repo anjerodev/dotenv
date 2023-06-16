@@ -45,31 +45,29 @@ export const getSession = async () => {
 }
 
 export const getAuthUser = async (): Promise<Profile | null> => {
-  const { session } = await getSession()
+  try {
+    const { session } = await getSession()
 
-  if (!session) {
-    // throw new RequestError({ message: 'Unauthorized', status: 401 })
+    const authUser = session.user
+
+    const { data: user, error } = await supabase
+      .from('profiles')
+      .select('*')
+      .eq('id', authUser.id)
+      .single()
+
+    const avatar = user?.avatar_url
+      ? supabase.storage.from('avatars').getPublicUrl(user?.avatar_url).data
+          .publicUrl
+      : null
+
+    if (error || !user) {
+      // console.log(error)
+      return null
+    } else {
+      return { avatar, ...user }
+    }
+  } catch (error) {
     return null
-  }
-
-  const authUser = session.user
-
-  const { data: user, error } = await supabase
-    .from('profiles')
-    .select('*')
-    .eq('id', authUser.id)
-    .single()
-
-  const avatar = user?.avatar_url
-    ? supabase.storage.from('avatars').getPublicUrl(user?.avatar_url).data
-        .publicUrl
-    : null
-
-  if (error || !user) {
-    console.log(error)
-    // throw new RequestError({ message: 'No user found', status: 404 })
-    return null
-  } else {
-    return { avatar, ...user }
   }
 }

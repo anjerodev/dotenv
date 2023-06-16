@@ -63,7 +63,7 @@ const CommandList = React.forwardRef<
   <CommandPrimitive.List
     ref={ref}
     className={cn(
-      'absolute inset-x-0 top-11 z-50 w-full overflow-hidden rounded-md border border-foreground/10 bg-popover p-1 text-foreground opacity-0 transition peer-focus-within:translate-y-1 peer-focus-within:opacity-100',
+      'absolute inset-x-0 top-12 z-50 hidden w-full overflow-hidden rounded-md border border-foreground/10 bg-popover p-1 text-foreground animate-in fade-in slide-in-from-top-1 peer-focus-within:block',
       className
     )}
     {...props}

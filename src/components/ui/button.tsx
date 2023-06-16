@@ -1,5 +1,5 @@
 import * as React from 'react'
-import { VariantProps, cva } from 'class-variance-authority'
+import { cva, VariantProps } from 'class-variance-authority'
 
 import { cn } from '@/lib/cn'
 import { createPolymorphicComponent } from '@/lib/create-polymorphic-component'
@@ -7,7 +7,7 @@ import { UnstyledButton } from '@/components/ui/unstyled-button'
 import { Icons } from '@/components/icons'
 
 const buttonVariants = cva(
-  'transition-all active:scale-[0.98] gap-2 min-w-[140px] flex inline-flex items-center justify-center rounded-lg text-md font-semibold disabled:opacity-50 disabled:pointer-events-none data-[state=open]:bg-brand-500 dark:data-[state=open]:bg-brand-600',
+  'transition-all active:scale-[0.98] gap-2 min-w-[140px] flex inline-flex items-center justify-center rounded-lg text-md font-semibold disabled:opacity-50 disabled:pointer-events-none dark:font-bold',
   {
     variants: {
       size: {
@@ -23,7 +23,7 @@ const buttonVariants = cva(
         outline:
           'bg-transparent border border-foreground/10 hover:bg-foreground/5',
         subtle:
-          'bg-brand-500/25 text-brand-900 hover:bg-brand-500/40 dark:text-brand-300',
+          'bg-brand-500/25 text-brand-900 hover:bg-brand-500/10 dark:hover:bg-brand-500/20 dark:bg-brand-500/10 dark:text-brand-500',
         ghost:
           'bg-transparent hover:bg-zinc-100 dark:hover:bg-zinc-800 dark:text-zinc-100 dark:hover:text-zinc-100 data-[state=open]:bg-transparent dark:data-[state=open]:bg-transparent',
         link: 'font-normal min-w-0 px-0 bg-transparent dark:bg-transparent text-foreground hover:bg-transparent hover:text-accent dark:hover:bg-transparent',
