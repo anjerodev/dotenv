@@ -1,5 +1,7 @@
 import Image from 'next/image'
 import Link from 'next/link'
+import collaborationPreview from '@/assets/members-dialog.png'
+import openSourceIllustration from '@/assets/open_source_illustration.png'
 import projectsPreview from '@/assets/projects_preview.jpg'
 import supabaseDark from '@/assets/supabase-logo-wordmark--dark.png'
 import supabaseLight from '@/assets/supabase-logo-wordmark--light.png'
@@ -73,7 +75,14 @@ export default async function Home() {
               </p>
             </div>
           </div>
-          <div className="rounded-2xl bg-black"></div>
+          <div style={{ perspective: 1000 }}>
+            <Image
+              src={collaborationPreview}
+              alt="Collaborate"
+              className="shadow-2xl"
+              style={{ transform: 'rotateY(-15deg)' }}
+            />
+          </div>
         </div>
       </section>
       {/* ENCRYPTION SECTION */}
@@ -159,9 +168,20 @@ export default async function Home() {
               </div>
             </div>
           </div>
-          <div className="rounded-2xl bg-black"></div>
+          <div>
+            <Image
+              quality={100}
+              src={openSourceIllustration}
+              alt="Open Source"
+            />
+          </div>
         </div>
       </section>
+      <footer className="w-full px-8 py-3 text-center">
+        <a className="text-foreground/50" href="https://storyset.com/web">
+          Web illustrations by Storyset
+        </a>
+      </footer>
     </div>
   )
 }
