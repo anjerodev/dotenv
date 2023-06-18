@@ -229,10 +229,8 @@ export function DocumentsContainer({ projectId }: DocumentsContainerProps) {
                       'opacity-10'
                   )}
                 >
-                  <div className="truncate text-lg font-medium">
-                    {document.name}
-                  </div>
-                  <span className="mt-1 text-sm text-card-foreground/50">
+                  <div className="truncate font-medium">{document.name}</div>
+                  <span className="mt-1 text-xs text-card-foreground/50">
                     {dayjs(document.updated_at).format('MMM DD, YYYY')}
                   </span>
                   <div className="mt-2 flex justify-end">
@@ -309,7 +307,7 @@ export const Documents = ({
           disabled={disabled}
           className="h-full"
         >
-          <div className="flex grow flex-col items-center justify-center gap-2 py-4 font-semibold text-card-foreground">
+          <div className="flex grow flex-col items-center justify-center gap-2 py-2 font-semibold text-card-foreground">
             <Icons.plus size={32} />
             Add document
           </div>

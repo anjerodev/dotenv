@@ -15,7 +15,7 @@ import { Icons } from '@/components/icons'
 export default async function Home() {
   return (
     <div className="w-full px-8 xl:px-0">
-      <section className="min-h-screen w-full py-24">
+      <section className="w-full py-24">
         <div className="mx-auto w-full max-w-5xl">
           <div className="mb-7 select-none px-4 text-center font-mono text-3xl font-bold leading-relaxed sm:text-6xl sm:leading-[1.5]">
             Keep all your projects <HomeSecrets /> secure in the same place.
@@ -178,7 +178,10 @@ export default async function Home() {
         </div>
       </section>
       <footer className="w-full px-8 py-3 text-center">
-        <a className="text-foreground/50" href="https://storyset.com/web">
+        <a
+          className="text-sm text-foreground/50"
+          href="https://storyset.com/web"
+        >
           Web illustrations by Storyset
         </a>
       </footer>

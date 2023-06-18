@@ -1,4 +1,5 @@
 import '@/styles/globals.css'
+
 import { Metadata } from 'next'
 
 import { siteConfig } from '@/config/site'
@@ -13,8 +14,8 @@ import { ToastProvider } from '@/components/providers/toast-provider'
 
 export const metadata: Metadata = {
   title: {
-    default: siteConfig.name,
     template: `%s - ${siteConfig.name}`,
+    default: siteConfig.name,
   },
   description: siteConfig.description,
   themeColor: [
@@ -23,8 +24,8 @@ export const metadata: Metadata = {
   ],
   icons: {
     icon: '/favicon.ico',
-    // shortcut: "/favicon-16x16.png",
-    // apple: "/apple-touch-icon.png",
+    shortcut: '/favicon-16x16.png',
+    apple: '/apple-touch-icon.png',
   },
 }
 

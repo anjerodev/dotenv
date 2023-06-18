@@ -7,7 +7,7 @@ import { UnstyledButton } from '@/components/ui/unstyled-button'
 import { Icons } from '@/components/icons'
 
 const buttonVariants = cva(
-  'transition-all active:scale-[0.98] gap-2 min-w-[140px] flex inline-flex items-center justify-center rounded-lg text-md font-semibold disabled:opacity-50 disabled:pointer-events-none dark:font-bold',
+  'transition-all active:scale-[0.98] gap-2 min-w-[140px] flex inline-flex items-center justify-center rounded-lg text-md font-semibold disabled:opacity-50 disabled:pointer-events-none',
   {
     variants: {
       size: {
@@ -17,7 +17,7 @@ const buttonVariants = cva(
       },
       variant: {
         default:
-          'bg-brand-600 text-brand-100 dark:bg-brand-500 dark:text-brand-950 hover:bg-brand-500 dark:hover:bg-brand-600',
+          'bg-brand-600 text-brand-100 dark:bg-brand-500 dark:text-brand-950 hover:bg-brand-500 dark:font-bold dark:hover:bg-brand-600',
         destructive:
           'bg-red-500 text-white hover:bg-red-600 dark:text-zinc-900 dark:hover:bg-red-600',
         outline:
