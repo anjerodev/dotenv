@@ -5,6 +5,7 @@ import { cn } from '@/lib/cn'
 import { createPolymorphicComponent } from '@/lib/create-polymorphic-component'
 import { UnstyledButton } from '@/components/ui/unstyled-button'
 import { Icons } from '@/components/icons'
+import { DefaultProps } from '@/types/styles'
 
 const iconButtonVariants = cva(
   'transition-all active:scale-95 flex inline-flex items-center justify-center rounded-full focus:outline-none disabled:opacity-50 disabled:pointer-events-none shadow-md',
@@ -28,22 +29,16 @@ const iconButtonVariants = cva(
   }
 )
 
-type IconButtonProps = {
-  loading?: boolean
-  icon: React.ReactNode
-}
-
 interface ComponentProps
-  extends React.ButtonHTMLAttributes<HTMLButtonElement>,
-    VariantProps<typeof iconButtonVariants>,
-    IconButtonProps {
-  component?: any
+  extends DefaultProps,  React.ButtonHTMLAttributes<HTMLButtonElement>,
+    VariantProps<typeof iconButtonVariants> {
+      loading?: boolean
+      icon: React.ReactNode
 }
 
 const _IconButton = React.forwardRef<HTMLButtonElement, ComponentProps>(
   (props, ref) => {
     const {
-      component = 'button',
       className,
       variant,
       disabled,
@@ -56,19 +51,16 @@ const _IconButton = React.forwardRef<HTMLButtonElement, ComponentProps>(
 
     return (
       <UnstyledButton
-        component={component}
         className={cn(
-          iconButtonVariants({ variant, size, className }),
-          component !== 'button' &&
-            isDisabled &&
-            'pointer-events-none opacity-50'
+          iconButtonVariants({ variant, size, className })
         )}
         ref={ref}
-        type={component === 'button' ? 'button' : undefined}
         disabled={isDisabled}
+        data-disabled={disabled || undefined}
+        data-loading={loading || undefined}
         {...other}
       >
-        {loading ? <Icons.spinner className="h-5 w-5 animate-spin" /> : icon}
+        {loading ? <Icons.spinner className="h-6 w-6 animate-spin" /> : icon}
       </UnstyledButton>
     )
   }
