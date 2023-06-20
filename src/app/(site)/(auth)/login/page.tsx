@@ -1,4 +1,5 @@
 import { LoginForm } from '@/components/forms/login-form'
+import { Logo } from '@/components/logo'
 
 import '@/styles/animations.css'
 
@@ -12,8 +13,7 @@ export default async function LoginPage() {
       <div className="flex w-full items-center justify-center px-8 py-16">
         <div className="w-full max-w-lg">
           <div>
-            {/* Logo */}
-            <div className='text-5xl font-bold'>.env</div>
+            <Logo />
             <div className="mt-16 flex items-center gap-3">
               <div className="font-mono text-4xl font-medium">Welcome</div>
               <Image
@@ -25,11 +25,9 @@ export default async function LoginPage() {
             </div>
             <p className="mt-4">
               We want to make it{' '}
-              <span className="font-semibold text-brand-500">
-                simple
-              </span>
-              , so you don’t need a password. Just enter your email and we’ll
-              send you a magic link that lets you sign in.
+              <span className="font-semibold text-brand-500">simple</span>, so
+              you don’t need a password. Just enter your email and we’ll send
+              you a magic link that lets you sign in.
             </p>
             <p>
               If you don’t have an account yet, we’ll create one for you
@@ -50,10 +48,7 @@ export default async function LoginPage() {
             <div className="relative z-30">
               <h1 className="mb-6 leading-tight">
                 A simple and secure storage for yours{' '}
-                <span className="font-black text-brand-500">
-                  .env
-                </span>{' '}
-                files.
+                <span className="font-black text-brand-500">.env</span> files.
               </h1>
               <p className="italic">
                 An open source project from developers to developers.

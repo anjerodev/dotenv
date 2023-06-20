@@ -14,7 +14,7 @@ export default function MarketingMenu() {
           href={routes.TWITTER}
           target="_blank"
           disabled
-          className="peer relative z-10 bg-transparent hover:bg-transparent"
+          className="peer relative z-10 bg-transparent hover:translate-y-0 hover:bg-transparent"
         >
           <Icons.twitter className="h-5 w-5" />
         </ActionIcon>
@@ -25,7 +25,7 @@ export default function MarketingMenu() {
           component="a"
           href={routes.GITHUB}
           target="_blank"
-          className="peer relative z-10 bg-transparent hover:bg-transparent"
+          className="peer relative z-10 bg-transparent hover:translate-y-0 hover:bg-transparent"
         >
           <Icons.github className="h-5 w-5" />
         </ActionIcon>
