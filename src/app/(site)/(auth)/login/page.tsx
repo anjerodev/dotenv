@@ -1,5 +1,4 @@
 import { LoginForm } from '@/components/forms/login-form'
-import Logo from '@/components/logo'
 
 import '@/styles/animations.css'
 
@@ -13,7 +12,8 @@ export default async function LoginPage() {
       <div className="flex w-full items-center justify-center px-8 py-16">
         <div className="w-full max-w-lg">
           <div>
-            <Logo />
+            {/* Logo */}
+            <div className='text-5xl font-bold'>.env</div>
             <div className="mt-16 flex items-center gap-3">
               <div className="font-mono text-4xl font-medium">Welcome</div>
               <Image
