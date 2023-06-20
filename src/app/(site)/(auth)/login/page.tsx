@@ -44,14 +44,16 @@ export default async function LoginPage() {
         {/* Center Container */}
         <div className="relative z-20 flex h-full items-center justify-center">
           {/* Translucent Card */}
-          <div className="relative w-11/12 max-w-md overflow-hidden rounded-3xl border border-white/20 bg-background/20 px-12 py-16 shadow-lg backdrop-blur-[2px] md:w-4/5">
+          <div className="relative w-11/12 max-w-lg overflow-hidden rounded-3xl border border-white/20 bg-background/20 px-12 py-16 shadow-lg backdrop-blur-[2px] md:w-[85%]">
             <div className="relative z-30">
               <h1 className="mb-6 leading-tight">
-                A simple and secure storage for yours{' '}
-                <span className="font-black text-brand-500">.env</span> files.
+                A simple and secure storage to manage yours{' '}
+                <span className="font-black text-brand-400">
+                  Environment Variables.
+                </span>
               </h1>
               <p className="italic">
-                An open source project from developers to developers.
+                An open source project from developers for developers.
               </p>
             </div>
           </div>

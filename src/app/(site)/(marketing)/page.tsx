@@ -20,7 +20,8 @@ export default async function Home() {
             Keep all your projects <HomeSecrets /> secure in the same place.
           </div>
           <h2 className="mx-auto mb-16 max-w-md px-4 text-center text-xl font-normal text-muted-foreground">
-            A simple open source solution to manage all your .env files.
+            A simple open source solution to manage all your projects
+            Environment Variables.
           </h2>
           <div className="relative z-10 mx-auto block w-fit">
             <Button
@@ -111,11 +112,7 @@ export default async function Home() {
                 The versatility of supabase + the strength of pgsodium library.
               </p>
               <div className="mx-auto mt-12 w-fit">
-                <Image
-                  width={258}
-                  src={supabaseDark}
-                  alt="supabase"
-                />
+                <Image width={258} src={supabaseDark} alt="supabase" />
               </div>
             </div>
           </div>
@@ -169,7 +166,14 @@ export default async function Home() {
         </div>
       </section>
       <footer className="w-full px-8 py-3 text-center">
-        develop with 💟 by <a href='https://jepricreations.com' target='_blank' className='italic transition hover:text-brand-400'>Jepri Creations</a>
+        develop with 💟 by{' '}
+        <a
+          href="https://jepricreations.com"
+          target="_blank"
+          className="italic transition hover:text-brand-400"
+        >
+          Jepri Creations
+        </a>
       </footer>
     </div>
   )
