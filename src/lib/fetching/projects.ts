@@ -53,6 +53,7 @@ export const getProjects = async () => {
         .select('id, name')
         .eq('project_id', projectId)
         .order('created_at', { ascending: true })
+        .limit(3)
 
       const membersPromise = supabase
         .from('documents_members')
