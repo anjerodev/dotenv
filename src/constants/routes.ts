@@ -5,7 +5,7 @@ export const routes = {
   PROJECTS: '/projects',
   SUPPORT: '/contact',
   // Externals
-  GITHUB: 'https://github.com/jepricreations/envox',
+  GITHUB: 'https://github.com/jepricreations/dotenv',
   TWITTER: 'https://twitter.com/jepricreations',
 
   // PROJECT: (id: string) => `/projects/${id}`,

@@ -3,11 +3,11 @@ import { routes } from '@/constants/routes'
 export type SiteConfig = typeof siteConfig
 
 export const siteConfig = {
-  name: 'Envox',
+  name: 'dotenv',
   description: 'A place to keep your projects .env files',
   mainNav: [
     {
-      title: 'Envox',
+      title: 'dotenv',
       href: '/',
     },
   ],

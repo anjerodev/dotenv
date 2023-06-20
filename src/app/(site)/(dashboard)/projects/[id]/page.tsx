@@ -1,23 +1,9 @@
-import { Metadata, ResolvingMetadata } from 'next'
-
 import { getProject } from '@/lib/fetching/projects'
 import { DocumentsContainer } from '@/components/documents-container'
 
 type PageParamsType = {
   params: { id: string }
   searchParams: { [key: string]: string | undefined }
-}
-
-export async function generateMetadata(
-  { params, searchParams }: PageParamsType,
-  parent?: ResolvingMetadata
-): Promise<Metadata> {
-  const id = params.id
-  const project = await getProject(id)
-
-  return {
-    title: project.name,
-  }
 }
 
 export default async function Page({ params: { id } }: PageParamsType) {

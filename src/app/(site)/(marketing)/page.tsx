@@ -40,7 +40,7 @@ export default async function Home() {
               pathClassName="fill-brand-600/50 dark:fill-brand-500/20"
             />
             <div className="relative z-10 mt-24 overflow-hidden rounded-2xl border border-foreground/10 shadow-2xl">
-              <Image src={projectsPreview} alt="Envox Projects UI Preview" />
+              <Image src={projectsPreview} alt="dotenv Projects UI Preview" />
             </div>
           </div>
         </div>
