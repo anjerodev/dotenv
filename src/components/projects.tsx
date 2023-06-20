@@ -102,7 +102,7 @@ const Loading = () => (
     {new Array(2).fill('').map((_, idx) => (
       <Skeleton
         key={`projects-item-${idx}`}
-        className="h-[208px] w-full rounded-2xl"
+        className="h-44 w-full rounded-2xl"
       />
     ))}
   </>

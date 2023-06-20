@@ -49,7 +49,7 @@ const Card = React.forwardRef(
     ref
   ) => {
     const cardStyle = cn(
-      'card group/card relative h-52 cursor-pointer overflow-hidden rounded-2xl bg-foreground/20 p-[1px] transition-all active:scale-[0.98]',
+      'card group/card relative cursor-pointer overflow-hidden rounded-2xl bg-foreground/20 p-[1px] transition-all active:scale-[0.98]',
       disabled &&
         'pointer-events-none cursor-default opacity-50 active:scale-100',
       className

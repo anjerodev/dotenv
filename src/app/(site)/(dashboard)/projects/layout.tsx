@@ -3,16 +3,16 @@ import { routes } from '@/constants/routes'
 
 import { getAuthUser } from '@/lib/supabase-server'
 
-interface DashboardLayoutProps {
+interface ProjectsLayoutProps {
   children: React.ReactNode
 }
 
-export default async function DashboardLayout({
+export default async function ProjectsLayout({
   children,
-}: DashboardLayoutProps) {
+}: ProjectsLayoutProps) {
   const user = await getAuthUser()
 
   if (!user?.username) redirect(routes.ACCOUNT)
 
-  return <div className="mx-auto w-full max-w-4xl px-8 py-12">{children}</div>
+  return <section className='w-full'>{children}</section>
 }
