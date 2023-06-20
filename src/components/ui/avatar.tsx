@@ -13,7 +13,7 @@ export interface AvatarProps {
 }
 
 const sizeValue = {
-  xs: 'h-9 w-9',
+  xs: 'h-8 w-8',
   sm: 'h-[38px] w-[38px]',
   md: 'h-10 w-10',
   lg: 'h-12 w-12',
