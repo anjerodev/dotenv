@@ -247,7 +247,7 @@ export function DocumentsContainer({ projectId }: DocumentsContainerProps) {
                       return (
                         <ActionIcon
                           onClick={() => handleRemovedDocs(document.id)}
-                          className="group/button absolute -right-2 -top-2 z-10 rounded-full border border-foreground/10 bg-background text-destructive shadow-lg hover:bg-[#fdecec]  dark:text-destructive dark:hover:bg-[#2a191b]"
+                          className="group/button absolute -right-2 -top-2 z-10 rounded-full border border-fborder bg-background shadow-lg text-destructive hover:bg-[#2a191b]"
                         >
                           <Icons.trash
                             size={20}
@@ -261,7 +261,7 @@ export function DocumentsContainer({ projectId }: DocumentsContainerProps) {
                       return (
                         <ActionIcon
                           onClick={() => handleRemovedDocs(document.id)}
-                          className="group/button absolute -right-2 -top-2 z-10 rounded-full border border-foreground/10 bg-background text-foreground shadow-lg hover:bg-background/80"
+                          className="group/button absolute -right-2 -top-2 z-10 rounded-full border border-border bg-background text-foreground shadow-lg hover:bg-background/80"
                         >
                           <Icons.undo
                             size={20}
@@ -331,8 +331,8 @@ interface ProjectMenuProps {
 const ProjectMenu = ({ onEdit, onRemove, disabled }: ProjectMenuProps) => {
   return (
     <DropdownMenu>
-      <DropdownMenuTrigger asChild className="transition-all active:scale-95">
-        <ActionIcon disabled={disabled}>
+      <DropdownMenuTrigger asChild>
+        <ActionIcon disabled={disabled} className='hover:translate-y-0 hover:bg-foreground/5'>
           <Icons.menu />
         </ActionIcon>
       </DropdownMenuTrigger>

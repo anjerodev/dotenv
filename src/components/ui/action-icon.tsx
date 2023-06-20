@@ -8,12 +8,12 @@ import { UnstyledButton } from '@/components/ui/unstyled-button'
 import { Icons } from '@/components/icons'
 
 const actionIconVariants = cva(
-  'transition-all active:scale-[97%] flex inline-flex items-center justify-center rounded-md outline-none ring-ring disabled:opacity-80 disabled:pointer-events-none ring-0 focus-visible:ring-2 focus-visible:ring-offset-0 dark:ring-offset-zinc-800',
+  'transition-all active:scale-90 hover:-translate-y-0.5 flex inline-flex items-center justify-center rounded-md outline-none ring-ring disabled:opacity-80 disabled:pointer-events-none ring-0 focus-visible:ring-2 focus-visible:ring-offset-0 ring-offset-background',
   {
     variants: {
       variant: {
         default:
-          'bg-zinc-100 text-foreground hover:bg-zinc-200 dark:bg-zinc-950 dark:hover:bg-zinc-950/50',
+          'text-foreground bg-zinc-950',
       },
       size: {
         default: 'p-2',

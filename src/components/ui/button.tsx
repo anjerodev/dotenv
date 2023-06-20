@@ -17,16 +17,16 @@ const buttonVariants = cva(
       },
       variant: {
         default:
-          'bg-brand-600 text-brand-100 dark:bg-brand-500 dark:text-brand-950 hover:bg-brand-500 dark:font-bold dark:hover:bg-brand-600',
+          'bg-brand-500 text-brand-950 hover:bg-brand-600',
         destructive:
-          'bg-red-500 text-white hover:bg-red-600 dark:text-zinc-900 dark:hover:bg-red-600',
+          'bg-red-500 text-zinc-900 hover:bg-red-600',
         outline:
           'bg-transparent border border-foreground/10 hover:bg-foreground/5',
         subtle:
-          'bg-brand-500/25 text-brand-900 hover:bg-brand-500/10 dark:hover:bg-brand-500/20 dark:bg-brand-500/10 dark:text-brand-500',
+          'bg-brand-500/10 text-brand-500 hover:bg-brand-500/20',
         ghost:
-          'bg-transparent hover:bg-zinc-100 dark:hover:bg-zinc-800 dark:text-zinc-100 dark:hover:text-zinc-100 data-[state=open]:bg-transparent dark:data-[state=open]:bg-transparent',
-        link: 'font-normal min-w-0 px-0 bg-transparent dark:bg-transparent text-foreground hover:bg-transparent hover:text-accent dark:hover:bg-transparent',
+          'bg-transparent text-zinc-100 hover:bg-zinc-800',
+        link: 'font-normal min-w-0 px-0 bg-transparent text-foreground hover:bg-transparent hover:text-accent',
       },
     },
     defaultVariants: {

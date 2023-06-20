@@ -16,7 +16,6 @@ import {
 } from '@/components/ui/dropdown-menu'
 import { Skeleton } from '@/components/ui/skeleton'
 import { Icons } from '@/components/icons'
-import { ThemeToggle } from '@/components/theme-toggle'
 import UserAvatar from '@/components/user-avatar'
 
 import { useAuth } from '../providers/supabase-auth-provider'
@@ -33,7 +32,7 @@ export default function UserMenu({ user }: UserMenuProps) {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild className="transition-all active:scale-95">
-        <div className="cursor-pointer rounded-full bg-transparent p-1 transition-all duration-500 hover:bg-brand-600/20 dark:hover:bg-brand-300/20">
+        <div className="cursor-pointer rounded-full bg-transparent p-1 transition-all duration-500 hover:bg-brand-300/20">
           <UserAvatar
             size="xs"
             avatar={user?.avatar ?? ''}
@@ -81,11 +80,10 @@ export default function UserMenu({ user }: UserMenuProps) {
               <span>Support</span>
             </DropdownMenuItem>
           </Link> */}
-          <DropdownMenuSeparator />
-          <DropdownMenuLabel className="font-normal">
+          {/* <DropdownMenuLabel className="font-normal">
             <span className="text-muted-foreground">Theme</span>
           </DropdownMenuLabel>
-          <ThemeToggle />
+          <ThemeToggle /> */}
           <DropdownMenuSeparator />
           <DropdownMenuItem
             onClick={signOut}

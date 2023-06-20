@@ -5,33 +5,6 @@ export const shadcnPlugin = plugin(
   function ({ addBase }) {
     addBase({
       ':root': {
-        '--background': '0 0% 100%',
-        '--foreground': '240 6% 10%',
-        '--muted': '240 6% 90%',
-        '--muted-foreground': '240 5% 65%',
-        '--popover': '0 0% 100%',
-        '--popover-foreground': '240 5% 34%',
-        '--popover-border': '240 6% 90%',
-        '--card': '240 5% 96%',
-        '--card-foreground': '240 5% 34%',
-        '--primary': '267 46% 58%',
-        '--primary-foreground': '256 48% 95%',
-        '--secondary': '190 81% 36%',
-        '--secondary-foreground': '183 84% 90%',
-        '--accent': '156 50% 78%',
-        '--accent-foreground': '222.2 47.4% 11.2%',
-        '--destructive': '0 100% 50%',
-        '--destructive-foreground': '210 40% 98%',
-        '--success': '162 48% 45%',
-        '--success-foreground': '161 94% 30%',
-        '--error': '0 84% 60%',
-        '--error-foreground': '0 86% 59%',
-        '--warning': '38 92% 50%',
-        '--warning-foreground': '32 95% 44%',
-        '--ring': 'var(--primary) / 0.3',
-        '--radius': '0.5rem',
-      },
-      '.dark': {
         '--background': '220 9% 7%',
         '--foreground': '216 12% 84%',
         '--muted': '240 5% 34%',
@@ -55,7 +28,6 @@ export const shadcnPlugin = plugin(
         '--error-foreground': '0 100% 83%',
         '--warning': '38 92% 50%',
         '--warning-foreground': '48 96% 89%',
-        '--ring': 'var(--primary) / 0.3',
         '--radius': '0.5rem',
       },
     })
@@ -90,8 +62,8 @@ export const shadcnPlugin = plugin(
       },
       extend: {
         colors: {
-          border: 'hsl(var(--border))',
-          ring: 'hsl(var(--ring))',
+          border: 'hsl(var(--foreground) / 0.1)',
+          ring: 'hsl(var(--primary) / 0.3)',
           background: 'hsl(var(--background))',
           foreground: 'hsl(var(--foreground))',
           primary: {

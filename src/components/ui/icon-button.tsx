@@ -13,7 +13,7 @@ const iconButtonVariants = cva(
       variant: {
         default: 'bg-brand-500 text-gray-900 hover:bg-brand-600',
         contrast:
-          'bg-zinc-900 text-zinc-100 hover:bg-zinc-800 dark:bg-white dark:text-gray-900 dark:hover:bg-gray-300',
+          'bg-white text-gray-900 hover:bg-gray-300',
       },
       size: {
         default: 'p-4',

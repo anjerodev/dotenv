@@ -4,7 +4,6 @@ import collaborationPreview from '@/assets/members-dialog.png'
 import openSourceIllustration from '@/assets/open_source_illustration.png'
 import projectsPreview from '@/assets/projects_preview.jpg'
 import supabaseDark from '@/assets/supabase-logo-wordmark--dark.png'
-import supabaseLight from '@/assets/supabase-logo-wordmark--light.png'
 import { routes } from '@/constants/routes'
 
 import { Button } from '@/components/ui/button'
@@ -37,7 +36,7 @@ export default async function Home() {
               width="100%"
               height="50rem"
               className="absolute inset-x-0 top-[-15rem] z-0"
-              pathClassName="fill-brand-600/50 dark:fill-brand-500/20"
+              pathClassName="fill-brand-500/20"
             />
             <div className="relative z-10 mt-24 overflow-hidden rounded-2xl border border-foreground/10 shadow-2xl">
               <Image src={projectsPreview} alt="dotenv Projects UI Preview" />
@@ -53,7 +52,7 @@ export default async function Home() {
               width="125%"
               height="50rem"
               className="absolute inset-x-0 left-[-10rem] top-[-20rem] z-0"
-              pathClassName="fill-amber-600/10 dark:fill-amber-500/5"
+              pathClassName="fill-amber-500/10"
             />
             <div className="relative z-10">
               <div className="mb-7 flex gap-6">
@@ -70,8 +69,7 @@ export default async function Home() {
                 effortlessly.
               </h1>
               <p className="text-lg text-foreground/50">
-                Don’t send anymore your unprotected secrets by email, chats or
-                in task management apps.
+                Don’t send anymore your unprotected secrets by email.
               </p>
             </div>
           </div>
@@ -93,7 +91,7 @@ export default async function Home() {
               width="100%"
               height="50rem"
               className="absolute inset-x-0 top-[-25rem] z-0"
-              pathClassName="fill-emerald-600/10 dark:fill-emerald-500/5"
+              pathClassName="fill-emerald-500/10"
             />
             <div className="relative z-10">
               <div className="mb-7 flex justify-center gap-6">
@@ -115,15 +113,8 @@ export default async function Home() {
               <div className="mx-auto mt-12 w-fit">
                 <Image
                   width={258}
-                  src={supabaseLight}
-                  alt="supabase"
-                  className="block dark:hidden"
-                />
-                <Image
-                  width={258}
                   src={supabaseDark}
                   alt="supabase"
-                  className="hidden dark:block"
                 />
               </div>
             </div>
@@ -138,7 +129,7 @@ export default async function Home() {
               width="125%"
               height="50rem"
               className="absolute inset-x-0 left-[-10rem] top-[-20rem] z-0"
-              pathClassName="fill-blue-600/10 dark:fill-blue-500/5"
+              pathClassName="fill-blue-500/10"
             />
             <div className="relative z-10">
               <div className="mb-7 flex gap-6">
@@ -178,12 +169,7 @@ export default async function Home() {
         </div>
       </section>
       <footer className="w-full px-8 py-3 text-center">
-        <a
-          className="text-sm text-foreground/50"
-          href="https://storyset.com/web"
-        >
-          Web illustrations by Storyset
-        </a>
+        develop with 💟 by <a className='italic transition hover:text-brand-400' href='https://github.com/JepriCreations'>Jepri Creations</a>
       </footer>
     </div>
   )

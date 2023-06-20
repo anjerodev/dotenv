@@ -1,7 +1,6 @@
 'use client'
 
 import { ReactNode, createContext } from 'react'
-import { useTheme } from 'next-themes'
 import { ExternalToast, Toaster, toast as sonnerToast } from 'sonner'
 
 import { cn } from '@/lib/cn'
@@ -10,13 +9,10 @@ import { Icons } from '@/components/icons'
 const Context = createContext(undefined)
 
 export function ToastProvider({ children }: { children: ReactNode }) {
-  const { theme } = useTheme()
-
-  const toastTheme = theme === 'light' ? 'light' : 'dark'
 
   return (
     <Context.Provider value={undefined}>
-      <Toaster position="top-right" theme={toastTheme} />
+      <Toaster position="top-right" theme='dark' />
       {children}
     </Context.Provider>
   )
@@ -76,16 +72,16 @@ const BaseToast = ({
   const color = {
     success: 'bg-success',
     error: 'bg-error',
-    info: 'bg-blue-600 dark:bg-blue-500',
+    info: 'bg-blue-500',
     warning: 'bg-warning',
   }
 
   return (
-    <div className="relative box-border flex w-[356px] items-center gap-5 rounded-xl border border-foreground/10 bg-zinc-100 p-4 shadow-xl dark:bg-zinc-900">
+    <div className="relative box-border flex w-[356px] items-center gap-5 rounded-xl border border-foreground/10 p-4 shadow-xl bg-zinc-900">
       {icon && (
         <div
           className={cn(
-            'flex items-center justify-center rounded-full p-1.5 text-zinc-50 dark:text-zinc-900',
+            'flex items-center justify-center rounded-full p-1.5 text-zinc-900',
             color[type]
           )}
         >
@@ -94,18 +90,18 @@ const BaseToast = ({
       )}
 
       <div>
-        <p className="mb-[8px!important] font-medium leading-none text-zinc-700 dark:text-zinc-200">
+        <p className="mb-[8px!important] font-medium leading-none text-zinc-200">
           {message}
         </p>
         {description && (
-          <p className="mb-0 text-sm text-zinc-600 dark:text-zinc-300">
+          <p className="mb-0 text-sm text-zinc-300">
             {description}
           </p>
         )}
       </div>
 
       <button
-        className="absolute right-1.5 top-1.5 flex h-6 w-6 cursor-pointer items-center justify-center rounded-full border-none bg-transparent p-0 text-zinc-700 transition-colors duration-200 hover:text-zinc-900 dark:text-zinc-200 hover:dark:text-zinc-400"
+        className="absolute right-1.5 top-1.5 flex h-6 w-6 cursor-pointer items-center justify-center rounded-full border-none bg-transparent p-0 transition-colors duration-200 text-zinc-200 hover:text-zinc-400"
         onClick={onDismiss}
       >
         <Icons.close size={16} />

@@ -24,7 +24,7 @@ const PrimitiveSeparator = React.forwardRef<
       decorative={decorative}
       orientation={orientation}
       className={cn(
-        'bg-gray-200  dark:bg-gray-600',
+        'bg-foreground/20',
         orientation === 'horizontal' ? 'h-[1px] w-full' : 'h-full w-[1px]',
         className
       )}
@@ -46,7 +46,7 @@ const Separator = ({
     return (
       <div className="flex items-center">
         <PrimitiveSeparator orientation={orientation} {...other} />
-        <span className="mx-6 text-gray-200 dark:text-gray-600">
+        <span className="mx-6">
           {children}
         </span>
         <PrimitiveSeparator orientation={orientation} {...other} />

@@ -25,7 +25,7 @@ export default async function LoginPage() {
             </div>
             <p className="mt-4">
               We want to make it{' '}
-              <span className="font-semibold text-brand-600 dark:text-brand-500">
+              <span className="font-semibold text-brand-500">
                 simple
               </span>
               , so you don’t need a password. Just enter your email and we’ll
@@ -50,7 +50,7 @@ export default async function LoginPage() {
             <div className="relative z-30">
               <h1 className="mb-6 leading-tight">
                 A simple and secure storage for yours{' '}
-                <span className="font-black text-brand-200 dark:text-brand-500">
+                <span className="font-black text-brand-500">
                   .env
                 </span>{' '}
                 files.

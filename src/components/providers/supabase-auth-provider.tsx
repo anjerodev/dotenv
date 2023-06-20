@@ -108,6 +108,7 @@ export const SupabaseAuthProvider = ({
   const signOut = async () => {
     setIsAuthenticating(true)
     await supabase.auth.signOut()
+    router.refresh()
   }
 
   // Refresh the Page to Sync Server and Client

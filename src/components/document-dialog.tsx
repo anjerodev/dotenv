@@ -262,12 +262,9 @@ export default function DocumentDialog({
                       <TooltipTrigger asChild>
                         <ActionIcon
                           onClick={handleCopy}
-                          className={cn(
-                            'bg-white transition-all',
-                            !isFocused
-                              ? 'scale-100 opacity-100'
-                              : 'scale-50 opacity-0 delay-100'
-                          )}
+                          className={!isFocused
+                            ? 'scale-100 opacity-100'
+                            : 'scale-50 opacity-0 delay-100'}
                         >
                           {clipboard.copied ? (
                             <Icons.check
@@ -288,12 +285,9 @@ export default function DocumentDialog({
                       <TooltipTrigger asChild>
                         <ActionIcon
                           onClick={handleDownload}
-                          className={cn(
-                            'bg-white transition-all',
-                            !isFocused
-                              ? 'scale-100 opacity-100 delay-100'
-                              : 'scale-50 opacity-0'
-                          )}
+                          className={!isFocused
+                            ? 'scale-100 opacity-100 delay-100'
+                            : 'scale-50 opacity-0'}
                         >
                           {download.complete ? (
                             <Icons.check

@@ -133,7 +133,7 @@ export function LoginForm() {
         loading={isAuthenticating && state.provider === providers.GITHUB}
         onClick={hanldleGitHubLogin}
         icon={<Icons.github size={16} />}
-        className="w-full bg-gray-900 text-gray-100 hover:bg-gray-950 dark:bg-gray-100 dark:text-gray-900 dark:hover:bg-gray-300"
+        className="w-full bg-gray-100 text-gray-900 hover:bg-gray-300"
       >
         Login with Github
       </Button>
