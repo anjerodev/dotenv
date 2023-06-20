@@ -10,6 +10,7 @@ import { SwrProvider } from '@/components/providers/data-fetching-provider'
 import { SupabaseAuthProvider } from '@/components/providers/supabase-auth-provider'
 import { SupabaseProvider } from '@/components/providers/supabase-provider'
 import { ToastProvider } from '@/components/providers/toast-provider'
+import { Analytics } from '@vercel/analytics/react'
 
 export const metadata: Metadata = {
   title: {
@@ -48,6 +49,7 @@ export default async function RootLayout({ children }: RootLayoutProps) {
               </SupabaseAuthProvider>
             </SupabaseProvider>
           </ToastProvider>
+          <Analytics />
       </body>
     </html>
   )

@@ -169,7 +169,7 @@ export default async function Home() {
         </div>
       </section>
       <footer className="w-full px-8 py-3 text-center">
-        develop with 💟 by <a className='italic transition hover:text-brand-400' href='https://github.com/JepriCreations'>Jepri Creations</a>
+        develop with 💟 by <a href='https://jepricreations.com' target='_blank' className='italic transition hover:text-brand-400'>Jepri Creations</a>
       </footer>
     </div>
   )
