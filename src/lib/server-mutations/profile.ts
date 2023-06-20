@@ -15,7 +15,7 @@ interface PayloadData {
 }
 
 export async function updateProfile(
-  values: Omit<ProfileInputType, 'id' | 'avatar_url'>
+  values: {[x:string]: string}
 ): Promise<MutationReturnType> {
   const { supabase, session } = await getSession()
   const payload = profileSchema.safeParse(values)

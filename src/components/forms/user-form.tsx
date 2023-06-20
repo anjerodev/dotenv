@@ -12,7 +12,7 @@ import { InputForm } from './input-form'
 
 interface UserInfoProps {
   user: Profile
-  onSubmit: (values: { [x: string]: any }) => Promise<any>
+  onSubmit: (values: { [x: string]: string }) => Promise<any>
 }
 
 export function UserForm({ user, onSubmit }: UserInfoProps) {
