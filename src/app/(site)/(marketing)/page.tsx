@@ -11,6 +11,7 @@ import { Button } from '@/components/ui/button'
 import Blurb from '@/components/blurb'
 import HomeSecrets from '@/components/home-secrets'
 import { Icons } from '@/components/icons'
+import { OSCard } from '@/components/os-card'
 
 export default async function Home() {
   const repoPromise = repoInfo()
@@ -169,32 +170,32 @@ export default async function Home() {
           </div>
           <div className="flex items-center">
             <div className="grid w-full grid-cols-1 gap-3 sm:grid-cols-2">
-              <Card
+              <OSCard
                 title="Commits"
                 content={commits ?? ''}
                 icon={<Icons.commit />}
               />
-              <Card
+              <OSCard
                 title="Pull Requests"
                 content={pulls ?? ''}
                 icon={<Icons.pullRequest />}
               />
-              <Card
+              <OSCard
                 title="Forks"
                 content={repo?.forks ?? ''}
                 icon={<Icons.fork />}
               />
-              <Card
+              <OSCard
                 title="Stars"
                 content={repo?.stars ?? ''}
                 icon={<Icons.star />}
               />
-              <Card
+              <OSCard
                 title="Subscribers"
                 content={repo?.subscribers ?? ''}
                 icon={<Icons.subscribers />}
               />
-              <Card
+              <OSCard
                 title="Watchers"
                 content={repo?.watchers ?? ''}
                 icon={<Icons.watchers />}
@@ -226,28 +227,6 @@ export default async function Home() {
           </a>
         </div>
       </footer>
-    </div>
-  )
-}
-
-export const Card = ({
-  title,
-  content,
-  icon,
-}: {
-  title: string
-  content: string
-  icon?: React.ReactElement
-}) => {
-  return (
-    <div className="relative h-24 overflow-hidden rounded-lg border border-border bg-foreground/5 p-4">
-      <p className="!mb-0 text-muted-foreground">{title}</p>
-      <p className="text-3xl">{content}</p>
-      {icon && (
-        <div className="absolute right-0 top-0 -translate-y-2 translate-x-2 rotate-12 opacity-5">
-          {React.cloneElement(icon, { size: '6rem' })}
-        </div>
-      )}
     </div>
   )
 }
