@@ -1,9 +1,17 @@
+'use client'
+
 import * as React from 'react'
 import Link from 'next/link'
 
 import { cn } from '@/lib/cn'
 
-const CardsContainer = ({ children }: { children: React.ReactNode }) => {
+const CardsContainer = ({
+  children,
+  className,
+}: {
+  children: React.ReactNode
+  className?: string
+}) => {
   const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
     const cards = document.querySelectorAll<HTMLElement>('.card')
     for (const card of cards) {
@@ -18,7 +26,10 @@ const CardsContainer = ({ children }: { children: React.ReactNode }) => {
 
   return (
     <div
-      className="group/cards grid grid-cols-1 gap-4 sm:grid-cols-3"
+      className={cn(
+        'group/cards grid grid-cols-1 gap-4 sm:grid-cols-3',
+        className
+      )}
       onMouseMove={handleMouseMove}
     >
       {children}

@@ -1,17 +1,28 @@
+import React from 'react'
 import Image from 'next/image'
 import Link from 'next/link'
 import collaborationPreview from '@/assets/members-dialog.png'
-import openSourceIllustration from '@/assets/open_source_illustration.png'
 import projectsPreview from '@/assets/projects_preview.jpg'
 import supabaseDark from '@/assets/supabase-logo-wordmark--dark.png'
 import { routes } from '@/constants/routes'
 
+import { commitCount, pullRequestCount, repoInfo } from '@/lib/github'
 import { Button } from '@/components/ui/button'
 import Blurb from '@/components/blurb'
 import HomeSecrets from '@/components/home-secrets'
 import { Icons } from '@/components/icons'
 
 export default async function Home() {
+  const repoPromise = repoInfo()
+  const commitsCountPromise = commitCount()
+  const pullRequestCountPromise = pullRequestCount()
+
+  const [repo, commits, pulls] = await Promise.all([
+    repoPromise,
+    commitsCountPromise,
+    pullRequestCountPromise,
+  ])
+
   return (
     <div className="w-full px-8 xl:px-0">
       <section className="w-full py-24">
@@ -90,8 +101,8 @@ export default async function Home() {
           <div className="relative text-center">
             <Blurb
               width="100%"
-              height="50rem"
-              className="absolute inset-x-0 top-[-25rem] z-0"
+              height="45rem"
+              className="absolute inset-x-0 top-[-16rem] z-0"
               pathClassName="fill-emerald-500/10"
             />
             <div className="relative z-10">
@@ -156,25 +167,87 @@ export default async function Home() {
               </div>
             </div>
           </div>
-          <div>
-            <Image
-              quality={100}
-              src={openSourceIllustration}
-              alt="Open Source"
-            />
+          <div className="flex items-center">
+            <div className="grid w-full grid-cols-1 gap-3 sm:grid-cols-2">
+              <Card
+                title="Commits"
+                content={commits ?? ''}
+                icon={<Icons.commit />}
+              />
+              <Card
+                title="Pull Requests"
+                content={pulls ?? ''}
+                icon={<Icons.pullRequest />}
+              />
+              <Card
+                title="Forks"
+                content={repo?.forks ?? ''}
+                icon={<Icons.fork />}
+              />
+              <Card
+                title="Stars"
+                content={repo?.stars ?? ''}
+                icon={<Icons.star />}
+              />
+              <Card
+                title="Subscribers"
+                content={repo?.subscribers ?? ''}
+                icon={<Icons.subscribers />}
+              />
+              <Card
+                title="Watchers"
+                content={repo?.watchers ?? ''}
+                icon={<Icons.watchers />}
+              />
+            </div>
           </div>
         </div>
       </section>
-      <footer className="w-full px-8 py-3 text-center">
-        develop with 💟 by{' '}
-        <a
-          href="https://jepricreations.com"
-          target="_blank"
-          className="italic transition hover:text-brand-400"
-        >
-          Jepri Creations
-        </a>
+      <footer className="flex w-full items-center justify-center gap-3 px-8 py-3 text-center text-sm">
+        <div>
+          Developed with 💟 by{' '}
+          <a
+            href="https://jepricreations.com"
+            target="_blank"
+            className="italic transition hover:text-brand-400"
+          >
+            Jepri Creations
+          </a>
+        </div>
+        <span className="h-5 w-0.5 bg-foreground/50" />
+        <div>
+          Icons:{' '}
+          <a
+            href="https://lucide.dev/"
+            target="_blank"
+            className="italic transition hover:text-[#f56565]"
+          >
+            Lucide
+          </a>
+        </div>
       </footer>
+    </div>
+  )
+}
+
+export const Card = ({
+  title,
+  content,
+  icon,
+}: {
+  title: string
+  content: string
+  icon?: React.ReactElement
+}) => {
+  return (
+    <div className="relative h-24 overflow-hidden rounded-lg border border-border bg-foreground/5 p-4">
+      <p className="!mb-0 text-muted-foreground">{title}</p>
+      <p className="text-3xl">{content}</p>
+      {icon && (
+        <div className="absolute right-0 top-0 -translate-y-2 translate-x-2 rotate-12 opacity-5">
+          {React.cloneElement(icon, { size: '6rem' })}
+        </div>
+      )}
     </div>
   )
 }
