@@ -50,7 +50,7 @@ export default function TeamAvatars({
               <UserAvatar
                 withinGroup
                 size="xs"
-                avatar={user.avatar ?? ''}
+                avatar={user.avatar_url ?? ''}
                 username={user.username ?? ''}
               />
             </TooltipTrigger>

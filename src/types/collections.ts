@@ -17,15 +17,11 @@ export interface Member {
   id: string
   username: string | null
   avatar_url: string | null
-  avatar?: string | null
   email?: string
   role: MemberRole
 }
 
-export type Profile = Database['public']['Tables']['profiles']['Row'] & {
-  avatar: string | undefined | null
-}
-
+export type Profile = Database['public']['Tables']['profiles']['Row']
 export type ProfileInputType =
   Database['public']['Tables']['profiles']['Insert']
 

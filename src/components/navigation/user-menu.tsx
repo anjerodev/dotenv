@@ -25,7 +25,7 @@ interface UserMenuProps {
 }
 
 export default function UserMenu({ user }: UserMenuProps) {
-  const { signOut } = useAuth()
+  const { signOut, isAuthenticating } = useAuth()
 
   if (!user) return <Skeleton className="h-10 w-10 rounded-full" />
 
@@ -35,7 +35,7 @@ export default function UserMenu({ user }: UserMenuProps) {
         <div className="cursor-pointer rounded-full bg-transparent p-1 transition-all duration-500 hover:bg-brand-300/20">
           <UserAvatar
             size="xs"
-            avatar={user?.avatar ?? ''}
+            avatar={user?.avatar_url ?? ''}
             username={user?.username ?? ''}
           />
         </div>
@@ -86,11 +86,19 @@ export default function UserMenu({ user }: UserMenuProps) {
           <ThemeToggle /> */}
           <DropdownMenuSeparator />
           <DropdownMenuItem
-            onClick={signOut}
+            onSelect={(e) => {
+              e.preventDefault()
+              signOut()
+            }}
             className="text-destructive focus:bg-destructive/10"
           >
-            <Icons.logOut size={16} className="mr-2" />
-            <span>Log out</span>
+            {isAuthenticating ? (
+              <Icons.spinner size={16} className="mr-2 animate-spin" />
+            ) : (
+              <Icons.logOut size={16} className="mr-2" />
+            )}
+
+            <span>{isAuthenticating ? 'Login out...' : 'Log out'}</span>
           </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenuPortal>

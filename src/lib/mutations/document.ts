@@ -2,7 +2,10 @@ import 'server-only'
 
 import { MemberRole } from '@/types/collections'
 import { RequestError } from '@/lib/errors'
-import { supabase as admin, getSession } from '@/lib/supabase-server'
+import {
+  createAdminSupabase,
+  getRouteHandlerSession,
+} from '@/lib/supabase-server'
 
 export async function createDocument(
   projectId: string,
@@ -10,8 +13,8 @@ export async function createDocument(
 ) {
   try {
     if (!values) return { error: { message: 'No values has been passed.' } }
-
-    const { supabase, session } = await getSession()
+    const admin = createAdminSupabase()
+    const { supabase, session } = await getRouteHandlerSession()
 
     // Check that there is not a document with the same name in the project
     const { data: prevDoc } = await supabase
@@ -76,11 +79,7 @@ export async function createDocument(
     }
 
     const profile = member.data.profile
-    const avatar = profile?.avatar_url
-      ? supabase.storage.from('avatars').getPublicUrl(profile.avatar_url).data
-          .publicUrl
-      : null
-    const memberData = { role: member.data.role, avatar, ...profile }
+    const memberData = { role: member.data.role, ...profile }
 
     return { ...document, team: { members: [memberData], count: 1 } }
   } catch (error) {
@@ -93,7 +92,8 @@ export async function updateDocument(
   args: { projectId: string; values: { name: string; content: string } }
 ) {
   try {
-    const { supabase, session } = await getSession()
+    const admin = createAdminSupabase()
+    const { supabase, session } = await getRouteHandlerSession()
 
     if (!documentId || !args)
       throw new RequestError({

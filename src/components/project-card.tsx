@@ -15,7 +15,7 @@ export function ProjectCard({ project }: { project: CardProjectType }) {
   return (
     <Card
       href={routes.PROJECT(project.id)}
-      className="animate-in fade-in-50 zoom-in-90 h-44"
+      className="h-44 animate-in fade-in-50 zoom-in-90"
     >
       <div className="mb-2 text-lg font-medium">{project.name}</div>
       {(() => {
@@ -23,12 +23,14 @@ export function ProjectCard({ project }: { project: CardProjectType }) {
           return <div className="italic text-foreground/40">empty</div>
         if (documents.length > 0)
           return documents.slice(0, 2).map((doc: any) => (
-            <div key={doc.id || doc.name} className="text-foreground/60">
+            <div key={doc.id} className="text-foreground/60">
               {doc.name}
             </div>
           ))
       })()}
-      {documents.length > 2 && <div className='text-foreground/60 -mt-1'>...</div>}
+      {documents.length > 2 && (
+        <div className="-mt-1 text-foreground/60">...</div>
+      )}
       <div className="absolute inset-x-0 bottom-0 flex justify-end px-5 py-4">
         <TeamAvatars team={team?.members} count={team?.count} />
       </div>

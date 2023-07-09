@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { useSearchParams } from 'next/navigation'
+import { useRouter, useSearchParams } from 'next/navigation'
 import { useForm, zodResolver } from '@mantine/form'
 
 import { projectSchema } from '@/lib/validations/project'
@@ -22,6 +22,7 @@ import { Icons } from '@/components/icons'
 import { ProjectCard } from '@/components/project-card'
 
 export function Projects() {
+  const router = useRouter()
   const params = useSearchParams()
   const search = params.get('search') ?? ''
   const [open, setOpen] = useState(false)
@@ -39,6 +40,7 @@ export function Projects() {
       await create(values)
       setOpen(false)
       form.reset()
+      router.refresh()
     } catch (error) {
       console.log({ error })
     }

@@ -4,11 +4,11 @@ import { routes } from '@/constants/routes'
 import 'server-only'
 
 import { Member, MemberRole } from '@/types/collections'
-import { getSession } from '@/lib/supabase-server'
+import { getRouteHandlerSession } from '@/lib/supabase-server'
 
 export const getProjects = async () => {
   try {
-    const { supabase, session } = await getSession()
+    const { supabase, session } = await getRouteHandlerSession()
 
     let projects = []
 
@@ -86,19 +86,7 @@ export const getProjects = async () => {
         const index = uniqueMembers.findIndex((d) => d.id === member.id)
 
         if (index === -1) {
-          let avatar = null
-
-          if (member.avatar_url) {
-            const { data: userAvatar } = supabase.storage
-              .from('avatars')
-              .getPublicUrl(member.avatar_url)
-            avatar = userAvatar.publicUrl
-          }
-
-          uniqueMembers.push({
-            avatar,
-            ...member,
-          })
+          uniqueMembers.push(member)
         }
       }
 
@@ -124,7 +112,7 @@ export const getProjects = async () => {
 
 export const getProject = async (id: string) => {
   try {
-    const { supabase, session } = await getSession()
+    const { supabase, session } = await getRouteHandlerSession()
 
     const projectPromise = await supabase
       .from('projects')
@@ -133,7 +121,7 @@ export const getProject = async (id: string) => {
       .single()
     const projectUserDocuments = await supabase
       .from('documents_members')
-      .select('id')
+      .select('role')
       .match({ project_id: id, user_id: session.user.id })
 
     const [project, userDocuments] = await Promise.all([

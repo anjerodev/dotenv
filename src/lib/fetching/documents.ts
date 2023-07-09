@@ -2,11 +2,14 @@ import 'server-only'
 
 import { DocumentType, Member, MemberRole } from '@/types/collections'
 import { RequestError } from '@/lib/errors'
-import { supabase as admin, getSession } from '@/lib/supabase-server'
+import {
+  createAdminSupabase,
+  getRouteHandlerSession,
+} from '@/lib/supabase-server'
 
 export const getProjectDocuments = async (id: string) => {
   try {
-    const { supabase, session } = await getSession()
+    const { supabase, session } = await getRouteHandlerSession()
 
     const { data: userProjectDocuments, error } = await supabase
       .from('documents_members')
@@ -68,14 +71,8 @@ export const getProjectDocuments = async (id: string) => {
         for (const member of teamData.data) {
           const { role, profile } = member
           if (profile) {
-            const avatarUrl = profile.avatar_url
-            const avatar = avatarUrl
-              ? supabase.storage.from('avatars').getPublicUrl(avatarUrl).data
-                  .publicUrl
-              : null
             const userRole = role as MemberRole
-
-            team.push({ role: userRole, avatar, ...profile })
+            team.push({ role: userRole, ...profile })
           }
         }
       }
@@ -98,7 +95,8 @@ export const getProjectDocuments = async (id: string) => {
 
 export const getDocument = async (id: string) => {
   try {
-    const { supabase } = await getSession()
+    const admin = createAdminSupabase()
+    const { supabase } = await getRouteHandlerSession()
 
     // Get the last document update data
     const lastDocumentPromise = supabase
@@ -114,7 +112,7 @@ export const getDocument = async (id: string) => {
     // Get the document members
     const teamPromise = supabase
       .from('documents_members')
-      .select('ref:id, role, profile:profiles(id, username, avatar_url)', {
+      .select('id, role, profile:profiles(id, username, avatar_url)', {
         count: 'exact',
       })
       .eq('document_id', id)
@@ -147,16 +145,11 @@ export const getDocument = async (id: string) => {
 
     if (team) {
       for (const documentMember of team.data) {
-        const { ref, role, profile } = documentMember
+        const { id, role, profile } = documentMember
         if (profile) {
-          const avatarUrl = profile.avatar_url
-          const avatar = avatarUrl
-            ? supabase.storage.from('avatars').getPublicUrl(avatarUrl).data
-                .publicUrl
-            : null
           const userRole = role as MemberRole
 
-          members.push({ ref, role: userRole, avatar, ...profile })
+          members.push({ ref: id, role: userRole, ...profile })
         }
       }
     }

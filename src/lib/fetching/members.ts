@@ -1,6 +1,5 @@
-import { Profile } from '@/types/collections'
 import { RequestError } from '@/lib/errors'
-import { getSession } from '@/lib/supabase-server'
+import { getRouteHandlerSession } from '@/lib/supabase-server'
 
 export const getMembers = async ({
   username,
@@ -10,9 +9,7 @@ export const getMembers = async ({
   email: string
 }) => {
   try {
-    const { supabase, session } = await getSession()
-
-    const users: Partial<Profile>[] = []
+    const { supabase, session } = await getRouteHandlerSession()
 
     const { data, error } = await supabase
       .from('profiles')
@@ -29,18 +26,9 @@ export const getMembers = async ({
       })
     }
 
-    if (!data) return users
+    if (!data) return []
 
-    for (const user of data) {
-      const avatar = user.avatar_url
-        ? supabase.storage.from('avatars').getPublicUrl(user.avatar_url).data
-            .publicUrl
-        : null
-
-      users.push({ ...user, avatar })
-    }
-
-    return users
+    return data
   } catch (error) {
     throw error
   }

@@ -5,9 +5,9 @@ import { useEffect, useState } from 'react'
 import {
   Member,
   MemberRole,
+  membersActions,
   Profile,
   ProjectType,
-  membersActions,
 } from '@/types/collections'
 import { capitalize } from '@/lib/helpers'
 import { useDebounce } from '@/hooks/useDebounce'
@@ -203,7 +203,7 @@ export default function TeamDialog({
             <div key={member.id} className="flex justify-between py-1">
               <div className="flex items-center gap-3">
                 <UserAvatar
-                  avatar={member.avatar ?? ''}
+                  avatar={member.avatar_url ?? ''}
                   username={member.username ?? ''}
                 />
                 {`${member.username} ${isCurrentUer ? '(you)' : ''}`}

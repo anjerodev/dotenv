@@ -50,16 +50,11 @@ export const SupabaseAuthProvider = ({
       .eq('id', serverSession?.user?.id)
       .single()
 
-    const avatar = user?.avatar_url
-      ? supabase.storage.from('avatars').getPublicUrl(user?.avatar_url).data
-          .publicUrl
-      : null
-
     if (error) {
       console.log(error)
       return null
     } else {
-      return { avatar, ...user }
+      return user
     }
   }
 
@@ -108,7 +103,6 @@ export const SupabaseAuthProvider = ({
   const signOut = async () => {
     setIsAuthenticating(true)
     await supabase.auth.signOut()
-    router.refresh()
   }
 
   // Refresh the Page to Sync Server and Client

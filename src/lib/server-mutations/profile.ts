@@ -4,7 +4,6 @@ import { revalidatePath } from 'next/cache'
 import { routes } from '@/constants/routes'
 
 import { MutationReturnType } from '@/types/actions'
-import { ProfileInputType } from '@/types/collections'
 import { getSession } from '@/lib/supabase-server'
 import { profileSchema } from '@/lib/validations/profile'
 
@@ -14,9 +13,9 @@ interface PayloadData {
   [key: string]: any
 }
 
-export async function updateProfile(
-  values: {[x:string]: string}
-): Promise<MutationReturnType> {
+export async function updateProfile(values: {
+  [x: string]: string
+}): Promise<MutationReturnType> {
   const { supabase, session } = await getSession()
   const payload = profileSchema.safeParse(values)
 

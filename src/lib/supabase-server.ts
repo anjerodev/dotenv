@@ -2,7 +2,10 @@ import { cookies } from 'next/headers'
 
 import 'server-only'
 
-import { createServerComponentClient } from '@supabase/auth-helpers-nextjs'
+import {
+  createServerComponentClient,
+  createRouteHandlerClient as supabaseCreateRouteHandlerClient,
+} from '@supabase/auth-helpers-nextjs'
 import { createClient } from '@supabase/supabase-js'
 
 import { Profile } from '@/types/collections'
@@ -16,16 +19,18 @@ import { RequestError } from './errors'
  * for function crypto_aead_det_decrypt' will be throw when try to access/modify
  * the encrypted data with the auth helpers client
  */
-export const supabase = createClient<Database>(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.SUPABASE_SERVICE_ROLE_KEY!
-)
+export const createAdminSupabase = () =>
+  createClient<Database>(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.SUPABASE_SERVICE_ROLE_KEY!
+  )
 
-export const createServerClient = () => {
-  return createServerComponentClient<Database>({
+export const createServerClient = () =>
+  createServerComponentClient<Database>({
     cookies,
   })
-}
+export const createRouterHandleClient = () =>
+  supabaseCreateRouteHandlerClient<Database>({ cookies })
 
 export const getSession = async () => {
   try {
@@ -44,11 +49,34 @@ export const getSession = async () => {
   }
 }
 
+export const getRouteHandlerSession = async () => {
+  try {
+    const supabase = createRouterHandleClient()
+    const {
+      data: { session },
+    } = await supabase.auth.getSession()
+
+    if (!session) {
+      throw new RequestError({ message: 'Unauthorized', status: 401 })
+    }
+
+    return { supabase, session }
+  } catch (error) {
+    throw error
+  }
+}
+
 export const getAuthUser = async (): Promise<Profile | null> => {
   try {
-    const { session } = await getSession()
+    const supabase = createServerClient()
 
-    const authUser = session.user
+    const {
+      data: { user: authUser },
+    } = await supabase.auth.getUser()
+
+    if (!authUser) {
+      throw new RequestError({ message: 'Unauthorized', status: 401 })
+    }
 
     const { data: user, error } = await supabase
       .from('profiles')
@@ -56,16 +84,11 @@ export const getAuthUser = async (): Promise<Profile | null> => {
       .eq('id', authUser.id)
       .single()
 
-    const avatar = user?.avatar_url
-      ? supabase.storage.from('avatars').getPublicUrl(user?.avatar_url).data
-          .publicUrl
-      : null
-
     if (error || !user) {
       // console.log(error)
       return null
     } else {
-      return { avatar, ...user }
+      return user
     }
   } catch (error) {
     return null

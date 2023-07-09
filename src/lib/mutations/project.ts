@@ -1,12 +1,12 @@
 import 'server-only'
 
 import { RequestError } from '@/lib/errors'
-import { getSession } from '@/lib/supabase-server'
+import { getRouteHandlerSession } from '@/lib/supabase-server'
 import { editProjectSchema, projectSchema } from '@/lib/validations/project'
 
 export async function createProject(values: { [x: string]: any }) {
   try {
-    const { supabase } = await getSession()
+    const { supabase } = await getRouteHandlerSession()
 
     const payload = projectSchema.safeParse(values)
 
@@ -34,7 +34,7 @@ export async function createProject(values: { [x: string]: any }) {
 
 export async function updateProject(id: string, values: { [x: string]: any }) {
   try {
-    const { supabase } = await getSession()
+    const { supabase } = await getRouteHandlerSession()
 
     const payload = editProjectSchema.safeParse(values)
 
@@ -81,7 +81,7 @@ export async function updateProject(id: string, values: { [x: string]: any }) {
 
 export async function removeProject(id: string) {
   try {
-    const { supabase } = await getSession()
+    const { supabase } = await getRouteHandlerSession()
 
     const { error } = await supabase.from('projects').delete().eq('id', id)
 

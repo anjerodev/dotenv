@@ -1,6 +1,6 @@
 import { Member, MemberRole, membersActions } from '@/types/collections'
 import { RequestError } from '@/lib/errors'
-import { getSession } from '@/lib/supabase-server'
+import { getRouteHandlerSession } from '@/lib/supabase-server'
 
 type memberType = {
   ref: string
@@ -19,7 +19,7 @@ export const updateProjectMembers = async ({
   members: memberType[]
 }) => {
   try {
-    const { supabase } = await getSession()
+    const { supabase } = await getRouteHandlerSession()
 
     const newMembers = members.filter((m) => m.action === membersActions.CREATE)
     const updatedMembers = members.filter(
@@ -88,15 +88,9 @@ export const updateProjectMembers = async ({
 
     insertedData.forEach((member) => {
       if (member.profile) {
-        const avatar = member.profile?.avatar_url
-          ? supabase.storage
-              .from('avatars')
-              .getPublicUrl(member.profile.avatar_url).data.publicUrl
-          : null
         const memberData = {
           ref: member.ref,
           role: member.role as MemberRole,
-          avatar,
           ...member.profile,
         }
         inserted.push(memberData)
