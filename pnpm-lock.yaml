@@ -57,7 +57,7 @@ dependencies:
     specifier: 1.11.8
     version: 1.11.8
   encoding:
-    specifier: ^0.1.13
+    specifier: 0.1.13
     version: 0.1.13
   lucide-react:
     specifier: 0.244.0
@@ -93,7 +93,7 @@ dependencies:
     specifier: 1.0.6
     version: 1.0.6(tailwindcss@3.3.2)
   zod:
-    specifier: ^3.21.4
+    specifier: 3.21.4
     version: 3.21.4
 
 devDependencies:
