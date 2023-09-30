@@ -1,6 +1,7 @@
 import '@/styles/globals.css'
 
 import { Metadata } from 'next'
+import { Analytics } from '@vercel/analytics/react'
 
 import { siteConfig } from '@/config/site'
 import { cn } from '@/lib/cn'
@@ -10,7 +11,6 @@ import { SwrProvider } from '@/components/providers/data-fetching-provider'
 import { SupabaseAuthProvider } from '@/components/providers/supabase-auth-provider'
 import { SupabaseProvider } from '@/components/providers/supabase-provider'
 import { ToastProvider } from '@/components/providers/toast-provider'
-import { Analytics } from '@vercel/analytics/react'
 
 export const metadata: Metadata = {
   title: {
@@ -41,15 +41,15 @@ export default async function RootLayout({ children }: RootLayoutProps) {
       suppressHydrationWarning
       className={cn(fontSans.variable, fontMono.variable)}
     >
-      <body className="font-sans min-h-[100dvh] antialiased">
-          <ToastProvider>
-            <SupabaseProvider>
-              <SupabaseAuthProvider serverSession={session}>
-                <SwrProvider>{children}</SwrProvider>
-              </SupabaseAuthProvider>
-            </SupabaseProvider>
-          </ToastProvider>
-          <Analytics />
+      <body className="min-h-[100dvh] font-sans antialiased">
+        <ToastProvider>
+          <SupabaseProvider>
+            <SupabaseAuthProvider serverSession={session}>
+              <SwrProvider>{children}</SwrProvider>
+            </SupabaseAuthProvider>
+          </SupabaseProvider>
+        </ToastProvider>
+        <Analytics />
       </body>
     </html>
   )

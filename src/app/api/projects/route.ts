@@ -3,6 +3,8 @@ import { NextResponse } from 'next/server'
 import { getProjects } from '@/lib/fetching/projects'
 import { createProject } from '@/lib/mutations/project'
 
+export const dynamic = 'force-dynamic'
+
 export async function GET(req: Request) {
   try {
     const projects = await getProjects()

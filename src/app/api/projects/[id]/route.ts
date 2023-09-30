@@ -1,6 +1,4 @@
-import { redirect } from 'next/navigation'
 import { NextResponse } from 'next/server'
-import { routes } from '@/constants/routes'
 
 import { getProject } from '@/lib/fetching/projects'
 import { removeProject, updateProject } from '@/lib/mutations/project'
@@ -8,6 +6,8 @@ import { removeProject, updateProject } from '@/lib/mutations/project'
 type ParamsType = {
   params: { id: string }
 }
+
+export const dynamic = 'force-dynamic'
 
 export async function GET(req: Request, { params }: ParamsType) {
   try {

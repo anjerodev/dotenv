@@ -7,6 +7,8 @@ type ParamsType = {
   params: { id: string }
 }
 
+export const dynamic = 'force-dynamic'
+
 export async function GET(req: Request, { params }: ParamsType) {
   try {
     const id = params.id
