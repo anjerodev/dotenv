@@ -91,8 +91,8 @@ export function useMembers() {
                  * Mutation to update the project documents cache
                  */
                 mutateCache(routes.API_DOCUMENTS(projectId), undefined, {
-                  populateCache(_, currentData: Document[]) {
-                    const newData = currentData.map((doc) => {
+                  populateCache(_, currentData) {
+                    const newData = currentData.map((doc: Document) => {
                       if (doc.id === documentId) {
                         return { ...doc, team: newTeam }
                       }

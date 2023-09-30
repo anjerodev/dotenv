@@ -61,10 +61,10 @@ export default function useDocument({
        */
       if (values.name) {
         mutateCache(routes.API_PROJECTS, undefined, {
-          populateCache(_, projects: Project[]) {
+          populateCache(_, projects) {
             if (!projects) return
 
-            return projects.map((project) => {
+            return projects.map((project: Project) => {
               if (project.id === projectId) {
                 const { documents = [] } = project
                 const updatedDocuments = documents.map((doc) => {

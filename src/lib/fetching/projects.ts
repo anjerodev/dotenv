@@ -9,28 +9,23 @@ import { getRouteHandlerSession } from '@/lib/supabase-server'
 export const getProjects = async () => {
   try {
     const { supabase, session } = await getRouteHandlerSession()
-
     let projects = []
-
     const { data: ownProjects } = await supabase
       .from('projects')
       .select('id')
       .match({ owner: session.user.id })
       .order('created_at', { ascending: true })
-
     const userProjects = ownProjects ?? []
     const ownProjectsIds = userProjects.map(({ id }) => id)
     const plainTextOwnProjectsIds = `(${ownProjectsIds
       .map((id) => `"${id}"`)
       .join(',')})`
-
     const { data: projectsData } = await supabase
       .from('documents_members')
       .select('project_id')
       .eq('user_id', session.user.id)
       .not('project_id', 'in', plainTextOwnProjectsIds)
       .order('project_id', { ascending: true })
-
     const projectsDataArray = projectsData ?? []
     const uniqueProjectsIds = projectsDataArray.reduce(
       (prev: string[], curr) => {
@@ -40,56 +35,45 @@ export const getProjects = async () => {
       },
       ownProjectsIds
     )
-
     for (const projectId of uniqueProjectsIds) {
       const projectPromise = supabase
         .from('projects')
         .select('*, ownerProfile:profiles(id, username, avatar_url)')
         .match({ id: projectId })
         .single()
-
       const documentsPromise = supabase
         .from('documents')
         .select('id, name')
         .eq('project_id', projectId)
         .order('created_at', { ascending: true })
         .limit(3)
-
       const membersPromise = supabase
         .from('documents_members')
         .select('role, profile:profiles(id, username, avatar_url)')
         .eq('project_id', projectId)
         .order('added_at', { ascending: true })
-
       const [project, documents, members] = await Promise.all([
         projectPromise,
         documentsPromise,
         membersPromise,
       ])
-
       if (!project.data) continue
-
       const owner = project.data?.ownerProfile
         ? { role: MemberRole.Owner, ...project.data.ownerProfile }
         : null
-
       const uniqueMembers: Member[] = []
       let membersArray: Member[] = owner ? [owner] : []
-
       members.data?.forEach((member) => {
         if (!member.profile) return
         const role = member.role as MemberRole
         membersArray.push({ role, ...member.profile })
       })
-
       for (const member of membersArray) {
         const index = uniqueMembers.findIndex((d) => d.id === member.id)
-
         if (index === -1) {
           uniqueMembers.push(member)
         }
       }
-
       projects.push({
         id: project.data.id,
         name: project.data.name,
@@ -103,7 +87,6 @@ export const getProjects = async () => {
         },
       })
     }
-
     return projects
   } catch (error) {
     throw error
@@ -113,7 +96,6 @@ export const getProjects = async () => {
 export const getProject = async (id: string) => {
   try {
     const { supabase, session } = await getRouteHandlerSession()
-
     const projectPromise = await supabase
       .from('projects')
       .select()
@@ -123,17 +105,14 @@ export const getProject = async (id: string) => {
       .from('documents_members')
       .select('role')
       .match({ project_id: id, user_id: session.user.id })
-
     const [project, userDocuments] = await Promise.all([
       projectPromise,
       projectUserDocuments,
     ])
-
     if (project.error) {
       //   TODO: Handle when a project is not found
       redirect(routes.PROJECTS)
     }
-
     // If current user is not a member of the project redirect to user projects
     const isUserMember =
       session.user.id === project.data.owner ||
@@ -141,7 +120,6 @@ export const getProject = async (id: string) => {
     if (!isUserMember) {
       redirect(routes.PROJECTS)
     }
-
     return project.data
   } catch (error) {
     throw error

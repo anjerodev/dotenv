@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation'
 import { Edit, User } from 'lucide-react'
 
 import { Profile } from '@/types/collections'
-import { cn } from '@/lib/cn'
+import { cn } from '@/lib/utils'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { IconButton } from '@/components/ui/icon-button'
 import { useSupabase } from '@/components/providers/supabase-provider'
@@ -86,7 +86,7 @@ export function AvatarInput({ user }: AvatarInputProps) {
       <div
         className={cn(
           'absolute inset-0 h-full w-full',
-          user.avatar_url && 'animate-in spin-in-45 duration-1000'
+          user.avatar_url && 'duration-1000 animate-in spin-in-45'
         )}
       >
         <svg viewBox="0 0 160 160" fill="none" className="h-full w-full">

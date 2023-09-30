@@ -2,8 +2,8 @@ import * as React from 'react'
 import { cva, VariantProps } from 'class-variance-authority'
 
 import { DefaultProps } from '@/types/styles'
-import { cn } from '@/lib/cn'
 import { createPolymorphicComponent } from '@/lib/create-polymorphic-component'
+import { cn } from '@/lib/utils'
 import { UnstyledButton } from '@/components/ui/unstyled-button'
 import { Icons } from '@/components/icons'
 
@@ -12,8 +12,7 @@ const actionIconVariants = cva(
   {
     variants: {
       variant: {
-        default:
-          'text-foreground bg-zinc-950',
+        default: 'text-foreground bg-zinc-950',
       },
       size: {
         default: 'p-2',

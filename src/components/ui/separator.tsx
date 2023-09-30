@@ -3,7 +3,7 @@
 import * as React from 'react'
 import * as SeparatorPrimitive from '@radix-ui/react-separator'
 
-import { cn } from '@/lib/cn'
+import { cn } from '@/lib/utils'
 
 const PrimitiveSeparator = React.forwardRef<
   React.ElementRef<typeof SeparatorPrimitive.Root>,
@@ -46,9 +46,7 @@ const Separator = ({
     return (
       <div className="flex items-center">
         <PrimitiveSeparator orientation={orientation} {...other} />
-        <span className="mx-6">
-          {children}
-        </span>
+        <span className="mx-6">{children}</span>
         <PrimitiveSeparator orientation={orientation} {...other} />
       </div>
     )

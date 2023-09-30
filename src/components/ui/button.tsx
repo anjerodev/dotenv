@@ -1,8 +1,8 @@
 import * as React from 'react'
 import { cva, VariantProps } from 'class-variance-authority'
 
-import { cn } from '@/lib/cn'
 import { createPolymorphicComponent } from '@/lib/create-polymorphic-component'
+import { cn } from '@/lib/utils'
 import { UnstyledButton } from '@/components/ui/unstyled-button'
 import { Icons } from '@/components/icons'
 
@@ -16,16 +16,12 @@ const buttonVariants = cva(
         lg: 'h-11 px-8 rounded-md',
       },
       variant: {
-        default:
-          'bg-brand-500 text-brand-950 hover:bg-brand-600',
-        destructive:
-          'bg-red-500 text-zinc-900 hover:bg-red-600',
+        default: 'bg-brand-500 text-brand-950 hover:bg-brand-600',
+        destructive: 'bg-red-500 text-zinc-900 hover:bg-red-600',
         outline:
           'bg-transparent border border-foreground/10 hover:bg-foreground/5',
-        subtle:
-          'bg-brand-500/10 text-brand-500 hover:bg-brand-500/20',
-        ghost:
-          'bg-transparent text-zinc-100 hover:bg-zinc-800',
+        subtle: 'bg-brand-500/10 text-brand-500 hover:bg-brand-500/20',
+        ghost: 'bg-transparent text-zinc-100 hover:bg-zinc-800',
         link: 'font-normal min-w-0 px-0 bg-transparent text-foreground hover:bg-transparent hover:text-accent',
       },
     },

@@ -10,7 +10,6 @@ export const getMembers = async ({
 }) => {
   try {
     const { supabase, session } = await getRouteHandlerSession()
-
     const { data, error } = await supabase
       .from('profiles')
       .select('id, username, avatar_url')
@@ -18,16 +17,13 @@ export const getMembers = async ({
       .neq('id', session.user.id)
       .order('username')
       .limit(3)
-
     if (error) {
       console.log({ error })
       throw new RequestError({
         message: 'Error finding users',
       })
     }
-
     if (!data) return []
-
     return data
   } catch (error) {
     throw error

@@ -1,18 +1,17 @@
 'use client'
 
-import { ReactNode, createContext } from 'react'
-import { ExternalToast, Toaster, toast as sonnerToast } from 'sonner'
+import { createContext, ReactNode } from 'react'
+import { ExternalToast, toast as sonnerToast, Toaster } from 'sonner'
 
-import { cn } from '@/lib/cn'
+import { cn } from '@/lib/utils'
 import { Icons } from '@/components/icons'
 
 const Context = createContext(undefined)
 
 export function ToastProvider({ children }: { children: ReactNode }) {
-
   return (
     <Context.Provider value={undefined}>
-      <Toaster position="top-right" theme='dark' />
+      <Toaster position="top-right" theme="dark" />
       {children}
     </Context.Provider>
   )
@@ -56,7 +55,7 @@ export const toast = {
 
 interface BaseToastType {
   message: string | number
-  description: string | number | undefined
+  description: ToastProps['description']
   onDismiss?: () => void
   icon?: React.ReactNode | null
   type: 'success' | 'error' | 'info' | 'warning'
@@ -77,7 +76,7 @@ const BaseToast = ({
   }
 
   return (
-    <div className="relative box-border flex w-[356px] items-center gap-5 rounded-xl border border-foreground/10 p-4 shadow-xl bg-zinc-900">
+    <div className="relative box-border flex w-[356px] items-center gap-5 rounded-xl border border-foreground/10 bg-zinc-900 p-4 shadow-xl">
       {icon && (
         <div
           className={cn(
@@ -94,14 +93,12 @@ const BaseToast = ({
           {message}
         </p>
         {description && (
-          <p className="mb-0 text-sm text-zinc-300">
-            {description}
-          </p>
+          <p className="mb-0 text-sm text-zinc-300">{description}</p>
         )}
       </div>
 
       <button
-        className="absolute right-1.5 top-1.5 flex h-6 w-6 cursor-pointer items-center justify-center rounded-full border-none bg-transparent p-0 transition-colors duration-200 text-zinc-200 hover:text-zinc-400"
+        className="absolute right-1.5 top-1.5 flex h-6 w-6 cursor-pointer items-center justify-center rounded-full border-none bg-transparent p-0 text-zinc-200 transition-colors duration-200 hover:text-zinc-400"
         onClick={onDismiss}
       >
         <Icons.close size={16} />

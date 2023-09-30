@@ -2,28 +2,21 @@ import 'server-only'
 
 import { DocumentType, Member, MemberRole } from '@/types/collections'
 import { RequestError } from '@/lib/errors'
-import {
-  createAdminSupabase,
-  getRouteHandlerSession,
-} from '@/lib/supabase-server'
+import { getRouteHandlerSession } from '@/lib/supabase-server'
 
 export const getProjectDocuments = async (id: string) => {
   try {
     const { supabase, session } = await getRouteHandlerSession()
-
     const { data: userProjectDocuments, error } = await supabase
       .from('documents_members')
       .select('document:documents(*)')
       .match({ project_id: id, user_id: session.user.id })
       .order('created_at', { foreignTable: 'documents', ascending: true })
-
     if (error) {
       console.log({ error })
       throw new RequestError({ message: error.message })
     }
-
     const data = []
-    console.log({ userProjectDocuments })
     const documents = userProjectDocuments.reduce(
       (prev: DocumentType[], current) => {
         if (!current.document) return prev
@@ -31,7 +24,6 @@ export const getProjectDocuments = async (id: string) => {
       },
       []
     )
-
     // Fetch the document data
     for (const document of documents) {
       // Get the last document history
@@ -42,7 +34,6 @@ export const getProjectDocuments = async (id: string) => {
         .order('updated_at', { ascending: false })
         .limit(1)
         .single()
-
       // Get the document members
       const documentTeam = supabase
         .from('documents_members')
@@ -52,21 +43,16 @@ export const getProjectDocuments = async (id: string) => {
         .eq('document_id', document.id)
         .order('added_at', { ascending: true })
         .limit(3)
-
       const [lastUpdateData, teamData] = await Promise.all([
         lastUpdate,
         documentTeam,
       ])
-
       const documentError = lastUpdateData.error || teamData.error
-
       if (documentError) {
         console.log({ documentError })
         continue
       }
-
       const team: Member[] = []
-
       if (teamData) {
         for (const member of teamData.data) {
           const { role, profile } = member
@@ -76,7 +62,6 @@ export const getProjectDocuments = async (id: string) => {
           }
         }
       }
-
       data.push({
         ...document,
         ...lastUpdateData.data,
@@ -86,7 +71,6 @@ export const getProjectDocuments = async (id: string) => {
         },
       })
     }
-
     return data
   } catch (error) {
     throw error
@@ -95,9 +79,7 @@ export const getProjectDocuments = async (id: string) => {
 
 export const getDocument = async (id: string) => {
   try {
-    const admin = createAdminSupabase()
     const { supabase } = await getRouteHandlerSession()
-
     // Get the last document update data
     const lastDocumentPromise = supabase
       .from('documents_history')
@@ -108,7 +90,6 @@ export const getDocument = async (id: string) => {
       .order('updated_at', { ascending: false })
       .limit(1)
       .single()
-
     // Get the document members
     const teamPromise = supabase
       .from('documents_members')
@@ -117,45 +98,36 @@ export const getDocument = async (id: string) => {
       })
       .eq('document_id', id)
       .order('added_at', { ascending: true })
-
     const [lastDocument, team] = await Promise.all([
       lastDocumentPromise,
       teamPromise,
     ])
-
     const error = lastDocument.error || team.error
     if (error) {
       console.log({ error })
       throw new RequestError({ message: error.message })
     }
-
     // Get the decrypted content
-    const { data: content, error: decryptionError } = await admin
+    const { data: content, error: decryptionError } = await supabase
       .from('decrypted_documents_history')
       .select('decrypted_content')
       .eq('id', lastDocument?.data?.id)
       .limit(1)
       .single()
-
     if (decryptionError) {
       console.log('Decryption error:', decryptionError)
     }
-
     const members: Member[] = []
-
     if (team) {
       for (const documentMember of team.data) {
         const { id, role, profile } = documentMember
         if (profile) {
           const userRole = role as MemberRole
-
           members.push({ ref: id, role: userRole, ...profile })
         }
       }
     }
-
     const documentData = lastDocument.data.document ?? {}
-
     const data = {
       ...documentData,
       updated_at: lastDocument.data.updated_at!,
@@ -163,7 +135,6 @@ export const getDocument = async (id: string) => {
       content: content?.decrypted_content ?? '',
       team: { members, count: team.count ?? 0 },
     }
-
     return data
   } catch (error) {
     throw error

@@ -6,7 +6,7 @@ export default function HomeSecrets() {
   const [dots, setDots] = useState('')
 
   useEffect(() => {
-    let intervalId: NodeJS.Timer
+    let intervalId: NodeJS.Timeout
     if (dots.length < 7) {
       intervalId = setInterval(() => {
         setDots((prevDots) => prevDots + '•')

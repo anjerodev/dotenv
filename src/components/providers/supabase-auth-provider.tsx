@@ -1,14 +1,14 @@
 'use client'
 
 import { createContext, useContext, useEffect, useState } from 'react'
-import { useRouter, useSearchParams } from 'next/navigation'
-import { routes } from '@/constants/routes'
+import { useRouter } from 'next/navigation'
 import { Session } from '@supabase/supabase-js'
 import useSWR from 'swr'
 
 import { Profile } from '@/types/collections'
+import { useSupabase } from '@/components/providers/supabase-provider'
 
-import { useSupabase } from './supabase-provider'
+type SignInReturnType = { error: { message: string } } | { error: null }
 
 interface ContextI {
   user: Profile | null | undefined
@@ -16,17 +16,17 @@ interface ContextI {
   isLoading: boolean
   isAuthenticating: boolean
   signOut: () => Promise<void>
-  signInWithGithub: () => Promise<string | undefined>
-  signInWithOtp: (email: string) => Promise<string | undefined>
+  signInWithGithub: () => Promise<SignInReturnType>
+  signInWithOtp: (email: string) => Promise<SignInReturnType>
 }
 const Context = createContext<ContextI>({
   user: null,
   error: false,
   isLoading: true,
   isAuthenticating: false,
-  signOut: async () => {},
-  signInWithGithub: async () => undefined,
-  signInWithOtp: async () => undefined,
+  signOut: async () => undefined,
+  signInWithGithub: async () => ({ error: null }),
+  signInWithOtp: async () => ({ error: null }),
 })
 
 export const SupabaseAuthProvider = ({
@@ -38,24 +38,24 @@ export const SupabaseAuthProvider = ({
 }) => {
   const { supabase } = useSupabase()
   const [isAuthenticating, setIsAuthenticating] = useState(false)
-
   const router = useRouter()
-  const searchParams = useSearchParams()
 
   // Get USER
   const getUser = async (): Promise<Profile | null> => {
+    if (!serverSession) return null
+
     const { data: user, error } = await supabase
       .from('profiles')
       .select('*')
-      .eq('id', serverSession?.user?.id)
+      .eq('id', serverSession.user.id)
       .single()
 
     if (error) {
-      console.log(error)
+      console.log({ error })
       return null
-    } else {
-      return user
     }
+
+    return user
   }
 
   const {
@@ -66,37 +66,40 @@ export const SupabaseAuthProvider = ({
 
   // Sign-In with Github
   const signInWithGithub = async () => {
+    let result: SignInReturnType = { error: null }
     setIsAuthenticating(true)
 
-    const { error } = await supabase.auth.signInWithOAuth({
+    const { error: signInError } = await supabase.auth.signInWithOAuth({
       provider: 'github',
       options: {
-        redirectTo: `${location.origin}/auth/callback?from=${
-          searchParams?.get('from') || routes.PROJECTS
-        }`,
+        redirectTo: `${location.origin}/api/auth/callback`,
       },
     })
 
-    if (error) {
-      return error.message
+    if (signInError) {
+      result = { error: { message: signInError.message } }
     }
+
+    return result
   }
 
   // Sign-In with Magic Link
   const signInWithOtp = async (email: string) => {
+    let result: SignInReturnType = { error: null }
     setIsAuthenticating(true)
-    const { error } = await supabase.auth.signInWithOtp({
+
+    const { error: signInError } = await supabase.auth.signInWithOtp({
       email,
       options: {
-        emailRedirectTo: `${location.origin}/auth/callback?from=${
-          searchParams?.get('from') || routes.PROJECTS
-        }`,
+        emailRedirectTo: `${location.origin}/api/auth/callback`,
       },
     })
 
-    if (error) {
-      return error.message
+    if (signInError) {
+      result = { error: { message: signInError.message } }
     }
+
+    return result
   }
 
   // Sign Out

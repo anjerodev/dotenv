@@ -4,7 +4,7 @@ import * as React from 'react'
 import { DialogProps } from '@radix-ui/react-dialog'
 import { Command as CommandPrimitive } from 'cmdk'
 
-import { cn } from '@/lib/cn'
+import { cn } from '@/lib/utils'
 import { Dialog, DialogContent } from '@/components/ui/dialog'
 import { Icons } from '@/components/icons'
 
@@ -62,10 +62,7 @@ const CommandList = React.forwardRef<
 >(({ className, ...props }, ref) => (
   <CommandPrimitive.List
     ref={ref}
-    className={cn(
-      'absolute inset-x-0 top-12 z-50 hidden w-full overflow-hidden rounded-md border border-foreground/10 bg-popover p-1 text-foreground animate-in fade-in slide-in-from-top-1 peer-focus-within:block',
-      className
-    )}
+    className={cn('max-h-[300px] overflow-y-auto overflow-x-hidden', className)}
     {...props}
   />
 ))

@@ -6,7 +6,7 @@ import { routes } from '@/constants/routes'
 import dayjs from 'dayjs'
 
 import { Document, ProjectType } from '@/types/collections'
-import { cn } from '@/lib/cn'
+import { cn } from '@/lib/utils'
 import { useDocuments } from '@/hooks/useDocuments'
 import useKey from '@/hooks/useKey'
 import { useProject } from '@/hooks/useProject'
@@ -247,7 +247,7 @@ export function DocumentsContainer({ projectId }: DocumentsContainerProps) {
                       return (
                         <ActionIcon
                           onClick={() => handleRemovedDocs(document.id)}
-                          className="group/button absolute -right-2 -top-2 z-10 rounded-full border border-fborder bg-background shadow-lg text-destructive hover:bg-[#2a191b]"
+                          className="group/button absolute -right-2 -top-2 z-10 rounded-full border border-border bg-background text-destructive shadow-lg hover:bg-[#2a191b]"
                         >
                           <Icons.trash
                             size={20}
@@ -332,7 +332,10 @@ const ProjectMenu = ({ onEdit, onRemove, disabled }: ProjectMenuProps) => {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <ActionIcon disabled={disabled} className='hover:translate-y-0 hover:bg-foreground/5'>
+        <ActionIcon
+          disabled={disabled}
+          className="hover:translate-y-0 hover:bg-foreground/5"
+        >
           <Icons.menu />
         </ActionIcon>
       </DropdownMenuTrigger>

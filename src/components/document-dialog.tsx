@@ -8,7 +8,7 @@ import timezone from 'dayjs/plugin/timezone'
 import utc from 'dayjs/plugin/utc'
 
 import { MemberRole, ProjectType } from '@/types/collections'
-import { cn } from '@/lib/cn'
+import { cn } from '@/lib/utils'
 import { useClipboard } from '@/hooks/useClipboard'
 import useDocument from '@/hooks/useDocument'
 import { useDocuments } from '@/hooks/useDocuments'
@@ -262,9 +262,11 @@ export default function DocumentDialog({
                       <TooltipTrigger asChild>
                         <ActionIcon
                           onClick={handleCopy}
-                          className={!isFocused
-                            ? 'scale-100 opacity-100'
-                            : 'scale-50 opacity-0 delay-100'}
+                          className={
+                            !isFocused
+                              ? 'scale-100 opacity-100'
+                              : 'scale-50 opacity-0 delay-100'
+                          }
                         >
                           {clipboard.copied ? (
                             <Icons.check
@@ -285,9 +287,11 @@ export default function DocumentDialog({
                       <TooltipTrigger asChild>
                         <ActionIcon
                           onClick={handleDownload}
-                          className={!isFocused
-                            ? 'scale-100 opacity-100 delay-100'
-                            : 'scale-50 opacity-0'}
+                          className={
+                            !isFocused
+                              ? 'scale-100 opacity-100 delay-100'
+                              : 'scale-50 opacity-0'
+                          }
                         >
                           {download.complete ? (
                             <Icons.check

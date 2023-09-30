@@ -4,7 +4,7 @@ import * as React from 'react'
 import * as AvatarPrimitive from '@radix-ui/react-avatar'
 
 import { BasicSizes } from '@/types/styles'
-import { cn } from '@/lib/cn'
+import { cn } from '@/lib/utils'
 
 export interface AvatarProps {
   withinGroup?: boolean

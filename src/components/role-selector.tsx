@@ -1,5 +1,5 @@
 import { MemberRole } from '@/types/collections'
-import { cn } from '@/lib/cn'
+import { cn } from '@/lib/utils'
 import {
   Select,
   SelectContent,

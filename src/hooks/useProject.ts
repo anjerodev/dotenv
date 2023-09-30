@@ -39,8 +39,8 @@ export function useProject(id: string) {
       .then((updatedProject: Project) => {
         // Update cache in projects page
         mutateCache(routes.API_PROJECTS, undefined, {
-          populateCache(_, projects: Project[]) {
-            return projects?.map((project) => {
+          populateCache(_, projects) {
+            return projects?.map((project: Project) => {
               if (project.id === updatedProject.id) {
                 return {
                   ...project,

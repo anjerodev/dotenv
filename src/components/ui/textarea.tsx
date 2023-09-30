@@ -3,7 +3,7 @@
 import * as React from 'react'
 import TextareaAutosize from 'react-textarea-autosize'
 
-import { cn } from '@/lib/cn'
+import { cn } from '@/lib/utils'
 import { ScrollArea } from '@/components/ui/scroll-area'
 
 export interface TextareaProps

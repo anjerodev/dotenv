@@ -14,5 +14,5 @@ export default async function ProjectsLayout({
 
   if (!user?.username) redirect(routes.ACCOUNT)
 
-  return <section className='w-full'>{children}</section>
+  return <section className="w-full">{children}</section>
 }

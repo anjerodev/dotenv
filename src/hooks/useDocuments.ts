@@ -41,9 +41,9 @@ export function useDocuments(projectId: string) {
            * new document.
            */
           mutateCache(routes.API_PROJECTS, undefined, {
-            populateCache: (_, projects: ProjectCard[]) => {
+            populateCache: (_, projects) => {
               if (!projects) return
-              return projects.map((project) => {
+              return projects.map((project: ProjectCard) => {
                 if (project.id === projectId) {
                   const { documents = [] } = project
                   const documentObject = {

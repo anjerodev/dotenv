@@ -4,9 +4,9 @@ import { Metadata } from 'next'
 import { Analytics } from '@vercel/analytics/react'
 
 import { siteConfig } from '@/config/site'
-import { cn } from '@/lib/cn'
 import { fontMono, fontSans } from '@/lib/fonts'
 import { createServerClient } from '@/lib/supabase-server'
+import { cn } from '@/lib/utils'
 import { SwrProvider } from '@/components/providers/data-fetching-provider'
 import { SupabaseAuthProvider } from '@/components/providers/supabase-auth-provider'
 import { SupabaseProvider } from '@/components/providers/supabase-provider'
@@ -28,6 +28,8 @@ export const metadata: Metadata = {
 interface RootLayoutProps {
   children: React.ReactNode
 }
+
+export const dynamic = 'force-dynamic'
 
 export default async function RootLayout({ children }: RootLayoutProps) {
   const supabase = createServerClient()
