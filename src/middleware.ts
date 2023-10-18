@@ -4,13 +4,15 @@ import { createMiddlewareClient } from '@supabase/auth-helpers-nextjs'
 
 import type { Database } from '@/types/supabase'
 
+const whiteList = ['/api/auth/callback', '/api/cron']
+
 export async function middleware(req: NextRequest) {
   const res = NextResponse.next()
   const url = req.nextUrl
   const { pathname } = url
   const referer = req.headers.get('referer')
 
-  if (pathname.startsWith(`/api/`)) {
+  if (pathname.startsWith(`/api/`) && !whiteList.includes(pathname)) {
     const appUrl =
       process.env.NODE_ENV === 'development'
         ? 'http://localhost:3081'
