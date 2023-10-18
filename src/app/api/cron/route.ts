@@ -17,6 +17,6 @@ export async function GET(request: NextRequest) {
 
     return NextResponse.json({ ok: true })
   } catch (error) {
-    return NextResponse.json({ ok: false })
+    return NextResponse.json({ ok: false }, { status: 401 })
   }
 }
