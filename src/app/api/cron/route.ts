@@ -10,6 +10,11 @@ export async function GET(request: NextRequest) {
     }
     const supabase = createRouterHandleClient()
     const { error } = await supabase.from('logs').insert({})
+    await supabase
+      .from('logs')
+      .select('*')
+      .limit(10)
+      .order('created_at', { ascending: false })
 
     if (error) {
       throw error
@@ -17,6 +22,9 @@ export async function GET(request: NextRequest) {
 
     return NextResponse.json({ ok: true })
   } catch (error) {
-    return NextResponse.json({ message: 'Unauthorized', ok: false }, { status: 500 })
+    return NextResponse.json(
+      { message: 'Unauthorized', ok: false },
+      { status: 500 }
+    )
   }
 }
