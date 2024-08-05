@@ -10,7 +10,7 @@ interface Mutation {
 
 /**
  * Set up a "done" state is necesary to execute any action after transition is complete.
- * Otherwise, onSucced or onError will be fired before isPending is false.
+ * Otherwise, onSuccess or onError will be fired before isPending is false.
  */
 
 type State = {

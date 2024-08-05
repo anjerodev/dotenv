@@ -1,14 +1,12 @@
 'use client'
 
 import React, { useEffect, useState } from 'react'
-import { useSearchParams } from 'next/navigation'
-import { useForm } from '@mantine/form'
+import { type UseFormReturnType } from '@mantine/form'
 import dayjs from 'dayjs'
 import timezone from 'dayjs/plugin/timezone'
 import utc from 'dayjs/plugin/utc'
 
 import { MemberRole, ProjectType } from '@/types/collections'
-import { cn } from '@/lib/utils'
 import { useClipboard } from '@/hooks/useClipboard'
 import useDocument from '@/hooks/useDocument'
 import { useDocuments } from '@/hooks/useDocuments'
@@ -16,7 +14,12 @@ import { useDownloadFile } from '@/hooks/useDownloadFile'
 import useSetParams from '@/hooks/useSetParams'
 import { ActionIcon } from '@/components/ui/action-icon'
 import { Button } from '@/components/ui/button'
-import { Dialog, DialogContent, DialogFooter } from '@/components/ui/dialog'
+import {
+  Dialog,
+  DialogContent,
+  DialogFooter,
+  DialogTitle,
+} from '@/components/ui/dialog'
 import { Input } from '@/components/ui/input'
 import { Skeleton } from '@/components/ui/skeleton'
 import { Textarea } from '@/components/ui/textarea'
@@ -43,15 +46,17 @@ type FormType = {
 
 export default function DocumentDialog({
   project,
+  documentId,
   open,
   onOpenChange,
+  form,
 }: {
   project: ProjectType
+  documentId: string | null
   open: boolean | string
   onOpenChange: (open: boolean) => void
+  form: UseFormReturnType<FormType>
 }) {
-  const searchParams = useSearchParams()
-  const documentId = searchParams.get('doc')
   const { user } = useAuth()
   const { cleanParams } = useSetParams()
 
@@ -69,36 +74,18 @@ export default function DocumentDialog({
   const clipboard = useClipboard()
   const download = useDownloadFile({ format: 'env' })
 
-  const form = useForm({
-    initialValues: {
-      name: '',
-      content: '',
-    },
-    transformValues: (values) => ({
-      name: `.env${values.name ? '.' + values.name : ''}`,
-      content: values.content,
-    }),
-  })
-
   useEffect(() => {
-    if (documentId) {
-      onOpenChange(true)
-    }
-  }, [documentId])
+    let values = { name: '', content: '' }
 
-  useEffect(() => {
     if (data) {
-      form.setValues({
+      values = {
         name: data?.name ? data.name.replace(/\.env\.?/g, '') : '',
         content: data?.content ?? '',
-      })
-      form.resetDirty({
-        name: data?.name ? data.name.replace(/\.env\.?/g, '') : '',
-        content: data?.content ?? '',
-      })
-    } else {
-      form.reset()
+      }
     }
+
+    form.setValues(values)
+    form.resetDirty(values)
   }, [data])
 
   const handleCopy = () => {
@@ -128,7 +115,7 @@ export default function DocumentDialog({
     if (errorMessages) {
       form.setErrors({ ...form.errors, ...errorMessages })
     } else {
-      toast.error('Error submiting form.', {
+      toast.error('Error submitting form.', {
         description: error.message,
       })
     }
@@ -193,6 +180,7 @@ export default function DocumentDialog({
         closeButton={false}
         className="w-full sm:max-w-3xl"
       >
+        <DialogTitle hidden></DialogTitle>
         <form
           onSubmit={form.onSubmit(handleSubmit)}
           className="grid grid-cols-1 gap-3"
@@ -210,7 +198,7 @@ export default function DocumentDialog({
                 disabled={!canEdit}
                 autoFocus
                 placeholder="filename"
-                wraperStyle="max-w-xs"
+                wrapperStyle="max-w-xs"
                 className={form.values.name.length > 0 ? 'pl-0' : 'pl-2'}
                 leftSection={
                   <div className="pl-2">
@@ -296,7 +284,7 @@ export default function DocumentDialog({
                           {download.complete ? (
                             <Icons.check
                               size={18}
-                              className="text-succes animate-in fade-in-50 zoom-in"
+                              className="text-success animate-in fade-in-50 zoom-in"
                             />
                           ) : (
                             <Icons.file

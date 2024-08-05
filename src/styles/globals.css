@@ -3,11 +3,52 @@
 @tailwind utilities;
 
 @layer base {
+  :root {
+    --background: 220 9% 7%;
+    --foreground: 216 12% 84%;
+    --muted: 240 5% 34%;
+    --muted-foreground: 240 5% 65%;
+    --accent: 162 48% 45%;
+    --accent-foreground: 168 49% 10%;
+    --popover: 240 10% 4%;
+    --popover-foreground: 240 5% 84%;
+    --popover-border: 240 4% 16%;
+    --card: 230 8% 16%;
+    --card-foreground: 216 12% 84%;
+    --primary: 263 49% 67%;
+    --primary-foreground: 267 40% 23%;
+    --secondary: 188 83% 43%;
+    --secondary-foreground: 196 68% 15%;
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 100% 83%;
+    --success: 162 48% 45%;
+    --success-foreground: 156 72% 67%;
+    --error: 0 84% 60%;
+    --error-foreground: 0 100% 83%;
+    --warning: 38 92% 50%;
+    --warning-foreground: 48 96% 89%;
+    --radius: 0.5rem;
+  }
+
+  * {
+    @apply border-border/10;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  body {
+    font-feature-settings:
+      'rlig' 1,
+      'calt' 1;
+    width: 100vw;
+    overflow-x: hidden;
+    padding-right: calc(0 - var(--removed-body-scroll-bar-size)) !important;
+  }
+
   h1 {
-    @apply scroll-m-20 text-4xl font-bold tracking-tight lg:text-5xl;
+    @apply scroll-m-20 text-4xl font-bold lg:text-5xl;
   }
   h2 {
-    @apply scroll-m-20 pb-2 text-3xl font-semibold tracking-tight transition-colors;
+    @apply scroll-m-20 pb-2 text-3xl font-semibold transition-colors;
   }
   p {
     @apply leading-7 [&:not(:last-child)]:mb-4;
@@ -15,10 +56,17 @@
   blockquote {
     @apply mt-6 border-l-2 pl-6 italic;
   }
+
+  input[type='search']::-webkit-search-decoration,
+  input[type='search']::-webkit-search-cancel-button,
+  input[type='search']::-webkit-search-results-button,
+  input[type='search']::-webkit-search-results-decoration {
+    display: none;
+  }
 }
 
 @layer utilities {
   .title {
-    @apply scroll-m-20 font-mono text-5xl font-bold tracking-tight;
+    @apply scroll-m-20 font-mono text-4xl font-bold leading-tight lg:text-5xl lg:leading-tight;
   }
 }

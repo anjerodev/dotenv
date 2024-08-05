@@ -15,7 +15,7 @@ export function ProjectCard({ project }: { project: CardProjectType }) {
   return (
     <Card
       href={routes.PROJECT(project.id)}
-      className="h-44 animate-in fade-in-50 zoom-in-90"
+      className="animate-in fade-in-50 zoom-in-90"
     >
       <div className="mb-2 text-lg font-medium">{project.name}</div>
       {(() => {

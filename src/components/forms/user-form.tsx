@@ -22,10 +22,10 @@ export function UserForm({ user, onSubmit }: UserInfoProps) {
         id="username"
         icon={Icons.user}
         placeholder="Username"
-        validationSquema={profileUserNameSchema}
+        validationSchema={profileUserNameSchema}
         initialValue={user.username}
         onSubmit={onSubmit}
-        onSucced={() =>
+        onSuccess={() =>
           toast.success('Great!', {
             description:
               "Congratulations, you've successfully renamed yourself! Your new username is good to go.",
@@ -37,10 +37,10 @@ export function UserForm({ user, onSubmit }: UserInfoProps) {
         id="website"
         icon={Icons.website}
         placeholder="Website"
-        validationSquema={profileWebsiteSchema}
+        validationSchema={profileWebsiteSchema}
         initialValue={user.website}
         onSubmit={onSubmit}
-        onSucced={() =>
+        onSuccess={() =>
           toast.success('Success!', {
             description:
               'Ta-da! Your website field has been successfully updated. Give yourself a high five!🤚',

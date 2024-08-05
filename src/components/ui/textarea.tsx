@@ -12,7 +12,7 @@ export interface TextareaProps
   > {
   error?: string | undefined | null
   rows?: number
-  wraperStyle?: string
+  wrapperStyle?: string
   scrollAreaStyle?: string
   focusAction?: () => void
   blurAction?: () => void
@@ -24,7 +24,7 @@ const Textarea = React.forwardRef<HTMLTextAreaElement, TextareaProps>(
     const {
       rows = 5,
       error,
-      wraperStyle,
+      wrapperStyle,
       scrollAreaStyle,
       className,
       focusAction,
@@ -47,10 +47,10 @@ const Textarea = React.forwardRef<HTMLTextAreaElement, TextareaProps>(
         <div
           className={cn(
             'relative flex w-full items-center rounded-lg border bg-foreground/5 p-1 text-foreground outline-none ring-ring ring-offset-background transition-all',
-            focused ? 'ring-2  ring-offset-2 ' : 'ring-0',
+            focused ? 'ring-2 ring-offset-2' : 'ring-0',
             error ? 'border-error' : 'border-foreground/10',
             focused && error && 'ring-red-400/70',
-            wraperStyle
+            wrapperStyle
           )}
         >
           <ScrollArea

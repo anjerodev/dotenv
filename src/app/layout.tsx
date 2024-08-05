@@ -41,9 +41,13 @@ export default async function RootLayout({ children }: RootLayoutProps) {
     <html
       lang="en"
       suppressHydrationWarning
-      className={cn(fontSans.variable, fontMono.variable)}
+      className={cn(
+        fontSans.variable,
+        fontMono.variable,
+        'selection:bg-primary selection:text-primary-foreground'
+      )}
     >
-      <body className="min-h-[100dvh] font-sans antialiased">
+      <body className="bg-background font-sans text-foreground antialiased">
         <ToastProvider>
           <SupabaseProvider>
             <SupabaseAuthProvider serverSession={session}>

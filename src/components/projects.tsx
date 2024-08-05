@@ -49,7 +49,7 @@ export function Projects() {
   const userProjects = data ?? []
 
   return (
-    <CardsContainer>
+    <CardsContainer className="auto-rows-[176px]">
       <Dialog open={open} onOpenChange={setOpen}>
         <DialogTrigger asChild>
           <Card disabled={isLoading}>
@@ -104,7 +104,7 @@ const Loading = () => (
     {new Array(2).fill('').map((_, idx) => (
       <Skeleton
         key={`projects-item-${idx}`}
-        className="h-44 w-full rounded-2xl"
+        className="h-full w-full rounded-2xl"
       />
     ))}
   </>

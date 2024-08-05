@@ -24,9 +24,8 @@ export default async function LoginPage() {
               />
             </div>
             <p className="mt-4">
-              We want to make it{' '}
-              <span className="font-semibold text-brand-500">simple</span>, so
-              you don’t need a password. Just enter your email and we’ll send
+              We want to make it <span className="text-brand-500">simple</span>,
+              so you don’t need a password. Just enter your email and we’ll send
               you a magic link that lets you sign in.
             </p>
             <p>
@@ -48,7 +47,7 @@ export default async function LoginPage() {
             <div className="relative z-30">
               <h1 className="mb-6 leading-tight">
                 A simple and secure storage to manage yours{' '}
-                <span className="font-black text-brand-400">
+                <span className="font-mono text-brand-400">
                   Environment Variables.
                 </span>
               </h1>
@@ -59,8 +58,8 @@ export default async function LoginPage() {
           </div>
         </div>
         {/* Bubbles */}
-        <div className="bubble float_1 absolute bottom-[-100px] right-[-100px] z-0 h-[300px] w-[300px] rounded-full bg-emerald-500/20 blur-2xl " />
-        <div className="bubble float_3 absolute bottom-[-100px] left-[-300px] z-0 h-[600px] w-[600px] rounded-full bg-pink-500/25 blur-2xl " />
+        <div className="bubble float_1 absolute bottom-[-100px] right-[-100px] z-0 h-[300px] w-[300px] rounded-full bg-emerald-500/20 blur-2xl" />
+        <div className="bubble float_3 absolute bottom-[-100px] left-[-300px] z-0 h-[600px] w-[600px] rounded-full bg-pink-500/25 blur-2xl" />
       </div>
     </div>
   )

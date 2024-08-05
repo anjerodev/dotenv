@@ -2,7 +2,9 @@
 
 import { useEffect, useReducer, useState } from 'react'
 import Link from 'next/link'
+import { useSearchParams } from 'next/navigation'
 import { routes } from '@/constants/routes'
+import { useForm } from '@mantine/form'
 import dayjs from 'dayjs'
 
 import { Document, ProjectType } from '@/types/collections'
@@ -213,10 +215,7 @@ export function DocumentsContainer({ projectId }: DocumentsContainerProps) {
           ? new Array(2)
               .fill('')
               .map((_, index) => (
-                <Skeleton
-                  key={index}
-                  className="h-[130px] w-full rounded-2xl"
-                />
+                <Skeleton key={index} className="h-full w-full rounded-2xl" />
               ))
           : documents.map((document: ProjectDocument) => (
               <div key={document.id} className="group/card relative">
@@ -224,7 +223,7 @@ export function DocumentsContainer({ projectId }: DocumentsContainerProps) {
                   onClick={() => openDocument(document.id)}
                   disabled={state.editing}
                   className={cn(
-                    'relative z-0 h-fit w-full text-start animate-in fade-in-50 zoom-in-90',
+                    'relative z-0 h-full w-full text-start animate-in fade-in-50 zoom-in-90',
                     state.updates.removedDocs.includes(document.id) &&
                       'opacity-10'
                   )}
@@ -247,7 +246,7 @@ export function DocumentsContainer({ projectId }: DocumentsContainerProps) {
                       return (
                         <ActionIcon
                           onClick={() => handleRemovedDocs(document.id)}
-                          className="group/button absolute -right-2 -top-2 z-10 rounded-full border border-border bg-background text-destructive shadow-lg hover:bg-[#2a191b]"
+                          className="group/button absolute -right-2 -top-2 z-10 rounded-full border bg-background text-destructive shadow-lg hover:bg-[#2a191b]"
                         >
                           <Icons.trash
                             size={20}
@@ -261,7 +260,7 @@ export function DocumentsContainer({ projectId }: DocumentsContainerProps) {
                       return (
                         <ActionIcon
                           onClick={() => handleRemovedDocs(document.id)}
-                          className="group/button absolute -right-2 -top-2 z-10 rounded-full border border-border bg-background text-foreground shadow-lg hover:bg-background/80"
+                          className="group/button absolute -right-2 -top-2 z-10 rounded-full border bg-background text-foreground shadow-lg hover:bg-background/80"
                         >
                           <Icons.undo
                             size={20}
@@ -299,9 +298,28 @@ export const Documents = ({
   open?: boolean | string
   setOpen?: (open: boolean) => void
 }) => {
+  const searchParams = useSearchParams()
+  const documentId = searchParams.get('doc')
+  const form = useForm({
+    initialValues: {
+      name: '',
+      content: '',
+    },
+    transformValues: (values) => ({
+      name: `.env${values.name ? '.' + values.name : ''}`,
+      content: values.content,
+    }),
+  })
+
+  useEffect(() => {
+    if (documentId) {
+      setOpen(true)
+    }
+  }, [documentId])
+
   return (
     <>
-      <CardsContainer>
+      <CardsContainer className="auto-rows-[120px]">
         <Card
           onClick={() => setOpen(true)}
           disabled={disabled}
@@ -316,7 +334,13 @@ export const Documents = ({
         {children}
       </CardsContainer>
       {project && (
-        <DocumentDialog open={open} onOpenChange={setOpen} project={project} />
+        <DocumentDialog
+          documentId={documentId}
+          open={open}
+          onOpenChange={setOpen}
+          project={project}
+          form={form}
+        />
       )}
     </>
   )

@@ -19,7 +19,7 @@ import { toast } from '@/components/providers/toast-provider'
 
 interface DialogPropsType extends DialogProps {
   project: ProjectType
-  onSucced?: () => void
+  onSuccess?: () => void
   onError?: () => void
 }
 

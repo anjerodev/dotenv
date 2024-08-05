@@ -77,7 +77,7 @@ export default async function Home() {
                   <span className="leading-tight">Collaboration</span>
                 </div>
               </div>
-              <h1 className="mb-4 font-mono">
+              <h1 className="title mb-4 font-mono">
                 Share the secrets and assign roles to the team members
                 effortlessly.
               </h1>
@@ -116,13 +116,10 @@ export default async function Home() {
                   <span className="leading-tight">Encryption</span>
                 </div>
               </div>
-              <h1 className="mb-4 font-mono">
-                PostgreSQL pgsodium encryption under the hood for high level
+              <h1 className="title mb-4 font-mono">
+                Supabase Vault encryption under the hood for high level
                 cryptographic algorithms.
               </h1>
-              <p className="text-lg text-foreground/50">
-                The versatility of supabase + the strength of pgsodium library.
-              </p>
               <div className="mx-auto mt-12 w-fit">
                 <Image width={258} src={supabaseDark} alt="supabase" />
               </div>
@@ -150,7 +147,7 @@ export default async function Home() {
                   <span className="leading-tight">Open Source</span>
                 </div>
               </div>
-              <h1 className="mb-4 font-mono">
+              <h1 className="title mb-4 font-mono">
                 Community driven. Learn, contribute, improve. Let’s make a
                 better web together.
               </h1>
@@ -208,11 +205,11 @@ export default async function Home() {
         <div>
           Developed with 💟 by{' '}
           <a
-            href="https://jepricreations.com"
+            href="https://anjero.dev"
             target="_blank"
             className="italic transition hover:text-brand-400"
           >
-            Jepri Creations
+            anjerodev
           </a>
         </div>
         <span className="h-5 w-0.5 bg-foreground/50" />

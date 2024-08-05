@@ -7,7 +7,7 @@ import { UnstyledButton } from '@/components/ui/unstyled-button'
 import { Icons } from '@/components/icons'
 
 const buttonVariants = cva(
-  'transition-all active:scale-[0.98] gap-2 min-w-[140px] flex inline-flex items-center justify-center rounded-lg text-md font-semibold disabled:opacity-50 disabled:pointer-events-none',
+  'transition-all active:scale-[0.98] gap-2 min-w-[140px] flex items-center justify-center rounded-lg text-md font-semibold disabled:opacity-50 disabled:pointer-events-none',
   {
     variants: {
       size: {
@@ -65,11 +65,11 @@ const _Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
       <UnstyledButton
         component={component}
         className={cn(
-          buttonVariants({ variant, size, className }),
           fullWidth && 'w-full',
           component !== 'button' &&
             isDisabled &&
-            'pointer-events-none opacity-50'
+            'pointer-events-none opacity-50',
+          buttonVariants({ variant, size, className })
         )}
         ref={ref}
         type={component === 'button' ? 'button' : undefined}

@@ -6,7 +6,7 @@ import { cn } from '@/lib/utils'
 
 export interface InputProps
   extends React.InputHTMLAttributes<HTMLInputElement> {
-  wraperStyle?: string
+  wrapperStyle?: string
   leftSection?: React.ReactNode
   rightSection?: React.ReactNode
   error?: string | undefined | null
@@ -15,7 +15,7 @@ export interface InputProps
 const Input = React.forwardRef<HTMLInputElement, InputProps>(
   (
     {
-      wraperStyle,
+      wrapperStyle,
       className,
       leftSection,
       rightSection,
@@ -33,10 +33,10 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
         <div
           className={cn(
             'relative flex h-11 w-full items-center rounded-lg border border-foreground/10 bg-foreground/5 p-1 text-foreground outline-none ring-0 ring-ring ring-offset-background transition-all',
-            focused && 'ring-2  ring-offset-2',
+            focused && 'ring-2 ring-offset-2',
             error && 'border-error text-error',
             focused && error && 'ring-error/70',
-            wraperStyle
+            wrapperStyle
           )}
         >
           <span

@@ -11,22 +11,22 @@ import { Icon, Icons } from '@/components/icons'
 interface InputFormProps {
   id: string
   initialValue?: any
-  validationSquema?: ZodSchema<{ [x: string]: any }>
+  validationSchema?: ZodSchema<{ [x: string]: any }>
   icon: Icon
   placeholder?: string
   onSubmit?: (values: { [x: string]: any }) => Promise<any>
-  onSucced?: () => void
+  onSuccess?: () => void
   onError?: (error: string) => void
 }
 
 export function InputForm({
   id,
   initialValue,
-  validationSquema,
+  validationSchema,
   icon: IconComponent,
   placeholder,
   onSubmit,
-  onSucced,
+  onSuccess,
   onError,
 }: InputFormProps) {
   const [mutate, { isPending, error }] = useServerMutation()
@@ -35,7 +35,7 @@ export function InputForm({
     initialValues: {
       [id]: initialValue ?? '',
     },
-    validate: validationSquema ? zodResolver(validationSquema) : undefined,
+    validate: validationSchema ? zodResolver(validationSchema) : undefined,
   })
 
   const handleSubmit = (values: { [x: string]: any }) => {
@@ -52,7 +52,7 @@ export function InputForm({
       },
       onSuccess: () => {
         form.resetDirty(values)
-        onSucced && onSucced()
+        onSuccess && onSuccess()
       },
     })
   }

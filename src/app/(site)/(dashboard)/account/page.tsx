@@ -10,7 +10,7 @@ export default async function AccountPage() {
 
   return (
     <div className="mx-auto w-full max-w-4xl px-8 py-12">
-      <div className="title pb-16">Your Account</div>
+      <div className="title pb-16 text-center">Your Account</div>
       <div className="mx-auto flex max-w-sm flex-col items-center">
         {!user?.username && (
           <Alert className="mb-6" variant="warning">
